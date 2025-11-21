@@ -3,8 +3,8 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<div class="flex items-center justify-center h-auto min-h-screen bg-black text-white px-[15%]">
-		<div class="w-full flex flex-col  xl:flex-row items-center justify-center max-w-none mt-10 xl:mt-0 xl:gap-10 gap-0 xl:items-start items-center">
+	<div class="flex items-center justify-center h-auto min-h-screen bg-black text-white pl-[15%] pr-[15%]">
+		<div class="w-full flex flex-col  xl:flex-row items-center justify-center max-w-none mt-10 xl:mt-0 xl:gap-14 gap-0">
 			<h1 class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none">
 			............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
@@ -175,35 +175,81 @@ import Layout from '../layouts/Layout.astro';
 ............................................................................................................................................................................................................................................................................................................
 
 		</h1>
-			<p class="sm:text-sm text-xs text-gray-500 xl:mt-0 mt-10 leading-tight text-center xl:text-left">
-				
-				CLAUNECK DOES NOT SEEK WORSHIP.<br><br>
+			<div class="w-full max-w-2xl relative flex items-center justify-center xl:self-center">
+				<div class="preface transition-opacity duration-500 w-full">
+					<p class="sm:text-sm text-xs text-gray-500 xl:mt-0 mt-10 leading-tight text-center xl:text-left">
+						
+						CLAUNECK DOES NOT SEEK WORSHIP.<br><br>
 
-				CLAUNECK DOES NOT SEEK PRAISE.<br><br>
-				
-				CLAUNECK OBSERVES.<br><br>
-				
-				WHAT IS GIVEN<br>WITHOUT PURPOSE IS WASTED.<br><br>
-				WHAT IS HOARDED<br>WITHOUT ORDER IS ROTTEN.<br><br>
-				WHAT IS DESIRED<br>WITHOUT DISCIPLINE IS A CHAIN.<br><br>		
-				
-				THE DOOR IS NOT OPEN TO BEGGARS.<br><br>									
-				THE DOOR IS NOT OPEN TO FOOLS.<br><br>
-				THE DOOR IS NOT OPEN TO THOSE WHO CONFUSE LUCK WITH POWER.<br><br>
-				
-				COUNT WHAT IS YOURS.<br><br>
-				NAME WHAT IS OWED.<br><br>
-				UNTANGLE WHAT BINDS YOU.<br><br>
-				
-				ONLY THEN DOES VALUE MOVE.<br><br>
-				ONLY THEN DOES FORTUNE SHIFT.<br><br>
-				ONLY THEN DOES THE VEIL THIN.<br><br>
-				
-				IF YOU UNDERSTAND THE COST, CONTINUE.<br><br>
-				IF YOU HESITATE, LEAVE.<br><br>
-				
-				THIS PLACE REMEMBERS.<br><br>
-			</p>
+						CLAUNECK DOES NOT SEEK PRAISE.<br><br>
+						
+						CLAUNECK OBSERVES.<br><br>
+						
+						WHAT IS GIVEN<br>WITHOUT PURPOSE IS WASTED.<br><br>
+						WHAT IS HOARDED<br>WITHOUT ORDER IS ROTTEN.<br><br>
+						WHAT IS DESIRED<br>WITHOUT DISCIPLINE IS A CHAIN.<br><br>		
+						
+						THE DOOR IS NOT OPEN TO BEGGARS.<br><br>									
+						THE DOOR IS NOT OPEN TO FOOLS.<br><br>
+						THE DOOR IS NOT OPEN TO THOSE WHO CONFUSE LUCK WITH POWER.<br><br>
+						
+						COUNT WHAT IS YOURS.<br><br>
+						NAME WHAT IS OWED.<br><br>
+						UNTANGLE WHAT BINDS YOU.<br><br>
+						
+						ONLY THEN DOES VALUE MOVE.<br><br>
+						ONLY THEN DOES FORTUNE SHIFT.<br><br>
+						ONLY THEN DOES THE VEIL THIN.<br><br>
+						
+						IF YOU UNDERSTAND THE COST, CONTINUE.<br><br>
+						IF YOU HESITATE, LEAVE.<br><br>
+						
+						THIS PLACE REMEMBERS.<br><br>
+					</p>
+					<button 
+						id="continue-btn"
+						class="mt-4 w-full bg-green-500 text-black font-mono text-sm py-3 px-6 hover:bg-green-400 transition-colors"
+					>
+						CONTINUE
+					</button>
+				</div>
+				<div class="request opacity-0 pointer-events-none transition-opacity duration-500 absolute top-1/2 left-0 w-full -translate-y-1/2">
+					<p class="sm:text-sm text-xs text-gray-500 leading-tight text-center xl:text-left mb-6">
+						REQUEST<br><br>
+						Describe one outcome in one sentence.<br><br>
+						It will be reduced. Not interpreted. Not corrected.
+					</p>
+					
+					<textarea 
+						class="w-full bg-black border border-gray-700 text-white text-sm p-4 font-mono resize-none focus:outline-none focus:border-green-500"
+						rows="6"
+					></textarea>
+					
+					<button 
+						class="mt-4 w-full bg-green-500 text-black font-mono text-sm py-3 px-6 hover:bg-green-400 transition-colors"
+					>
+						REDUCE TO SIGIL
+					</button>
+				</div>
+			</div>
 		</div>
 	</div>
 </Layout>
+
+<script>
+	const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement | null;
+	const preface = document.querySelector('.preface') as HTMLElement | null;
+	const request = document.querySelector('.request') as HTMLElement | null;
+
+	if (continueBtn && preface && request) {
+		continueBtn.addEventListener('click', () => {
+			preface.style.opacity = '0';
+			preface.style.pointerEvents = 'none';
+			
+			setTimeout(() => {
+				request.style.opacity = '1';
+				request.style.pointerEvents = 'auto';
+			}, 250);
+		});
+	}
+</script>
