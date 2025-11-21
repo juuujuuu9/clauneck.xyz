@@ -5,7 +5,8 @@ import Layout from '../layouts/Layout.astro';
 <Layout>
 	<div class="flex items-center justify-center h-auto min-h-screen bg-black text-white pl-[15%] pr-[15%]">
 		<div class="w-full flex flex-col  xl:flex-row items-center justify-center max-w-none mt-10 xl:mt-0 xl:gap-14 gap-0">
-			<h1 class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none">
+			<div class="relative w-full">
+				<h1 id="ascii-art" class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none transition-opacity duration-500">
 			............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
@@ -175,6 +176,15 @@ import Layout from '../layouts/Layout.astro';
 ............................................................................................................................................................................................................................................................................................................
 
 		</h1>
+				<div id="sigil-container" class="absolute top-0 left-0 w-full opacity-0 pointer-events-none transition-opacity duration-500 flex items-center justify-center">
+					<canvas 
+						id="sigil-canvas"
+						class="max-w-md w-full aspect-square border border-gray-700 bg-black"
+						width="800"
+						height="800"
+					></canvas>
+				</div>
+			</div>
 			<div class="w-full max-w-2xl relative flex xl:items-center xl:justify-center items-start xl:self-center">
 				<div class="preface transition-opacity duration-500 w-full">
 					<p class="sm:text-sm text-xs text-gray-500 xl:mt-0 mt-10 leading-tight text-center xl:text-left">
@@ -221,15 +231,39 @@ import Layout from '../layouts/Layout.astro';
 					</p>
 					
 					<textarea 
+						id="request-input"
 						class="w-full bg-black border border-gray-700 text-white text-sm p-4 font-mono resize-none focus:outline-none focus:border-green-500"
 						rows="6"
 					></textarea>
 					
 					<button 
+						id="generate-btn"
 						class="mt-4 w-full bg-green-500 text-black font-mono text-sm py-3 px-6 hover:bg-green-400 transition-colors"
 					>
 						REDUCE TO SIGIL
 					</button>
+				</div>
+				<div id="export-buttons-container" class="opacity-0 pointer-events-none transition-opacity duration-500 absolute xl:mt-0 mt-10 left-0 w-full">
+					<div class="flex gap-2 flex-wrap">
+						<button 
+							id="export-png-btn"
+							class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
+						>
+							EXPORT PNG
+						</button>
+						<button 
+							id="export-jpeg-btn"
+							class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
+						>
+							EXPORT JPEG
+						</button>
+						<button 
+							id="export-pdf-btn"
+							class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
+						>
+							EXPORT PDF
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -237,19 +271,198 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
+	// Hash function
+	async function hash(str: string): Promise<string> {
+		const buffer = await crypto.subtle.digest(
+			"SHA-256",
+			new TextEncoder().encode(str)
+		);
+		return [...new Uint8Array(buffer)]
+			.map(b => b.toString(16).padStart(2, '0'))
+			.join('');
+	}
+
+	// Seeded RNG
+	function seededRNG(seed: number) {
+		let h = seed;
+		return () => {
+			h = Math.imul(1597334677, h) >>> 0;
+			return h / 4294967296;
+		};
+	}
+
+	// Convert hex string to integer seed
+	function hexToInt(hex: string): number {
+		return parseInt(hex.substring(0, 8), 16);
+	}
+
+	// Setup canvas for high-DPI displays
+	function setupCanvas(canvas: HTMLCanvasElement): CanvasRenderingContext2D | null {
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return null;
+
+		const dpr = window.devicePixelRatio || 1;
+		const rect = canvas.getBoundingClientRect();
+		const displaySize = Math.min(rect.width || 400, 400);
+		
+		canvas.width = displaySize * dpr;
+		canvas.height = displaySize * dpr;
+		canvas.style.width = displaySize + 'px';
+		canvas.style.height = displaySize + 'px';
+
+		ctx.scale(dpr, dpr);
+		return ctx;
+	}
+
+	// Generate sigil geometry
+	function generateSigil(ctx: CanvasRenderingContext2D, rng: () => number): void {
+		const w = ctx.canvas.width;
+		const h = ctx.canvas.height;
+
+		ctx.clearRect(0, 0, w, h);
+		ctx.strokeStyle = '#22c55e';
+		ctx.lineWidth = 2;
+		ctx.translate(w / 2, h / 2);
+
+		const steps = 5 + Math.floor(rng() * 20);
+		const points: Array<{ x: number; y: number }> = [];
+
+		for (let i = 0; i < steps; i++) {
+			const angle = rng() * Math.PI * 2;
+			const radius = 20 + rng() * (Math.min(w, h) / 3);
+			const x = Math.cos(angle) * radius;
+			const y = Math.sin(angle) * radius;
+
+			points.push({ x, y });
+
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(x, y);
+			ctx.stroke();
+
+			if (rng() > 0.6) {
+				ctx.beginPath();
+				ctx.arc(x, y, 5 + rng() * 20, 0, Math.PI * 2);
+				ctx.stroke();
+			}
+
+			// Add connecting lines between points
+			if (i > 0 && rng() > 0.5) {
+				const prev = points[i - 1];
+				ctx.beginPath();
+				ctx.moveTo(prev.x, prev.y);
+				ctx.lineTo(x, y);
+				ctx.stroke();
+			}
+		}
+
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+	}
+
+	// Export functions
+	function exportPNG(canvas: HTMLCanvasElement): void {
+		const link = document.createElement('a');
+		link.download = 'sigil.png';
+		link.href = canvas.toDataURL('image/png');
+		link.click();
+	}
+
+	function exportJPEG(canvas: HTMLCanvasElement): void {
+		const link = document.createElement('a');
+		link.download = 'sigil.jpg';
+		link.href = canvas.toDataURL('image/jpeg', 0.95);
+		link.click();
+	}
+
+	async function exportPDF(canvas: HTMLCanvasElement): Promise<void> {
+		const { jsPDF } = await import('jspdf');
+		const pdf = new jsPDF({
+			orientation: 'portrait',
+			unit: 'px',
+			format: [canvas.width, canvas.height]
+		});
+
+		pdf.addImage(
+			canvas.toDataURL('image/png'),
+			'PNG',
+			0,
+			0,
+			canvas.width,
+			canvas.height
+		);
+		pdf.save('sigil.pdf');
+	}
+
+	// UI elements
 	const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement | null;
 	const preface = document.querySelector('.preface') as HTMLElement | null;
 	const request = document.querySelector('.request') as HTMLElement | null;
+	const generateBtn = document.getElementById('generate-btn') as HTMLButtonElement | null;
+	const requestInput = document.getElementById('request-input') as HTMLTextAreaElement | null;
+	const sigilContainer = document.getElementById('sigil-container') as HTMLElement | null;
+	const canvas = document.getElementById('sigil-canvas') as HTMLCanvasElement | null;
+	const exportPngBtn = document.getElementById('export-png-btn') as HTMLButtonElement | null;
+	const exportJpegBtn = document.getElementById('export-jpeg-btn') as HTMLButtonElement | null;
+	const exportPdfBtn = document.getElementById('export-pdf-btn') as HTMLButtonElement | null;
+	const asciiArt = document.getElementById('ascii-art') as HTMLElement | null;
+	const exportButtonsContainer = document.getElementById('export-buttons-container') as HTMLElement | null;
 
 	if (continueBtn && preface && request) {
 		continueBtn.addEventListener('click', () => {
 			preface.style.opacity = '0';
 			preface.style.pointerEvents = 'none';
-			
+
 			setTimeout(() => {
 				request.style.opacity = '1';
 				request.style.pointerEvents = 'auto';
 			}, 250);
 		});
+	}
+
+	if (generateBtn && requestInput && sigilContainer && canvas && asciiArt && request && exportButtonsContainer) {
+		generateBtn.addEventListener('click', async () => {
+			const input = requestInput.value.trim();
+			if (!input) {
+				return;
+			}
+
+			// Normalize input
+			const normalized = input.toLowerCase().replace(/\s+/g, ' ').trim();
+
+			// Hash and generate sigil
+			const hashStr = await hash(normalized);
+			const seed = hexToInt(hashStr);
+			const rng = seededRNG(seed);
+
+			const ctx = setupCanvas(canvas);
+			if (ctx) {
+				generateSigil(ctx, rng);
+				
+				// Hide ASCII art and request box, show sigil and export buttons
+				asciiArt.style.opacity = '0';
+				asciiArt.style.pointerEvents = 'none';
+				request.style.opacity = '0';
+				request.style.pointerEvents = 'none';
+				
+				setTimeout(() => {
+					sigilContainer.style.opacity = '1';
+					sigilContainer.style.pointerEvents = 'auto';
+					exportButtonsContainer.style.opacity = '1';
+					exportButtonsContainer.style.pointerEvents = 'auto';
+				}, 250);
+			}
+		});
+	}
+
+	if (canvas && exportPngBtn) {
+		exportPngBtn.addEventListener('click', () => exportPNG(canvas));
+	}
+
+	if (canvas && exportJpegBtn) {
+		exportJpegBtn.addEventListener('click', () => exportJPEG(canvas));
+	}
+
+	if (canvas && exportPdfBtn) {
+		exportPdfBtn.addEventListener('click', () => exportPDF(canvas));
 	}
 </script>
