@@ -3,9 +3,9 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<div class="flex items-center justify-center h-auto min-h-screen bg-black text-white pl-[15%] pr-[15%]">
+	<div class="flex items-center justify-center h-auto min-h-screen bg-black text-white px-[5%] xl:pr-[15%] xl:pl-0">
 		<div class="w-full flex flex-col  xl:flex-row items-center justify-center max-w-none mt-10 xl:mt-0 xl:gap-14 gap-0">
-			<div class="relative w-full">
+			<div class="relative w-full flex items-center justify-center">
 				<h1 id="ascii-art" class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none transition-opacity duration-500">
 			............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
@@ -186,7 +186,7 @@ import Layout from '../layouts/Layout.astro';
 				</div>
 			</div>
 			<div class="w-full max-w-2xl relative flex xl:items-center xl:justify-center items-start xl:self-center">
-				<div class="preface transition-opacity duration-500 w-full">
+				<div class="preface transition-opacity duration-500 w-full mb-16 xl:mb-0">
 					<p class="sm:text-sm text-xs text-gray-500 xl:mt-0 mt-10 leading-tight text-center xl:text-left">
 						
 						CLAUNECK DOES NOT SEEK WORSHIP.<br><br>
@@ -318,41 +318,89 @@ import Layout from '../layouts/Layout.astro';
 	function generateSigil(ctx: CanvasRenderingContext2D, rng: () => number): void {
 		const w = ctx.canvas.width;
 		const h = ctx.canvas.height;
+		const size = Math.min(w, h);
 
 		ctx.clearRect(0, 0, w, h);
 		ctx.strokeStyle = '#22c55e';
 		ctx.lineWidth = 2;
 		ctx.translate(w / 2, h / 2);
 
-		const steps = 5 + Math.floor(rng() * 20);
-		const points: Array<{ x: number; y: number }> = [];
+		// Determine symmetry (3-8 fold for visual appeal)
+		const symmetry = [3, 4, 5, 6, 8][Math.floor(rng() * 5)];
+		const baseAngle = (rng() * Math.PI * 2) / symmetry;
 
-		for (let i = 0; i < steps; i++) {
-			const angle = rng() * Math.PI * 2;
-			const radius = 20 + rng() * (Math.min(w, h) / 3);
-			const x = Math.cos(angle) * radius;
-			const y = Math.sin(angle) * radius;
+		// Use concentric circles with structured radii
+		const numRings = 2 + Math.floor(rng() * 3); // 2-4 rings
+		const maxRadius = size * 0.35;
+		const points: Array<{ x: number; y: number; ring: number }> = [];
 
-			points.push({ x, y });
+		// Generate points on concentric rings with symmetry
+		for (let ring = 0; ring < numRings; ring++) {
+			const radius = (maxRadius / numRings) * (ring + 1);
+			const pointsPerRing = symmetry + Math.floor(rng() * symmetry);
+			
+			for (let i = 0; i < pointsPerRing; i++) {
+				const angleOffset = (rng() * 0.3 - 0.15); // Small random offset for organic feel
+				const angle = (i * (Math.PI * 2 / pointsPerRing)) + baseAngle + angleOffset;
+				const x = Math.cos(angle) * radius;
+				const y = Math.sin(angle) * radius;
+				points.push({ x, y, ring });
+			}
+		}
 
+		// Draw radial lines from center (structured)
+		const radialLines = Math.min(symmetry, points.length);
+		for (let i = 0; i < radialLines; i++) {
+			const point = points[Math.floor(i * (points.length / radialLines))];
 			ctx.beginPath();
 			ctx.moveTo(0, 0);
-			ctx.lineTo(x, y);
+			ctx.lineTo(point.x, point.y);
 			ctx.stroke();
+		}
 
-			if (rng() > 0.6) {
+		// Draw circles at points (more structured)
+		for (const point of points) {
+			if (rng() > 0.4) { // 60% chance
+				const circleSize = 4 + point.ring * 2 + rng() * 4;
 				ctx.beginPath();
-				ctx.arc(x, y, 5 + rng() * 20, 0, Math.PI * 2);
+				ctx.arc(point.x, point.y, circleSize, 0, Math.PI * 2);
 				ctx.stroke();
 			}
+		}
 
-			// Add connecting lines between points
-			if (i > 0 && rng() > 0.5) {
-				const prev = points[i - 1];
-				ctx.beginPath();
-				ctx.moveTo(prev.x, prev.y);
-				ctx.lineTo(x, y);
-				ctx.stroke();
+		// Connect points in structured patterns
+		// Connect points within same ring
+		for (let ring = 0; ring < numRings; ring++) {
+			const ringPoints = points.filter(p => p.ring === ring);
+			if (ringPoints.length > 1) {
+				const connectPattern = Math.floor(rng() * 3); // 0: all, 1: every other, 2: skip
+				for (let i = 0; i < ringPoints.length; i++) {
+					const next = (i + (connectPattern === 0 ? 1 : connectPattern === 1 ? 2 : 3)) % ringPoints.length;
+					if (rng() > 0.3) {
+						ctx.beginPath();
+						ctx.moveTo(ringPoints[i].x, ringPoints[i].y);
+						ctx.lineTo(ringPoints[next].x, ringPoints[next].y);
+						ctx.stroke();
+					}
+				}
+			}
+		}
+
+		// Connect between rings (structured)
+		for (let ring = 0; ring < numRings - 1; ring++) {
+			const currentRing = points.filter(p => p.ring === ring);
+			const nextRing = points.filter(p => p.ring === ring + 1);
+			
+			// Connect corresponding points or nearby points
+			for (let i = 0; i < Math.min(currentRing.length, nextRing.length); i++) {
+				if (rng() > 0.5) {
+					const curr = currentRing[i];
+					const next = nextRing[Math.floor(i * (nextRing.length / currentRing.length))];
+					ctx.beginPath();
+					ctx.moveTo(curr.x, curr.y);
+					ctx.lineTo(next.x, next.y);
+					ctx.stroke();
+				}
 			}
 		}
 
