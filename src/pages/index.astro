@@ -3,9 +3,9 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<div class="flex items-center justify-center h-auto min-h-dvh bg-black text-white px-[5%] xl:pr-[15%] xl:pl-0">
+	<div class="flex items-start xl:items-center justify-center h-auto min-h-dvh bg-black text-white px-[5%] xl:pr-[15%] xl:pl-0 pt-8 xl:pt-0">
 		<div class="w-full flex flex-col  xl:flex-row items-center justify-center max-w-none mt-10 xl:mt-0 xl:gap-14 gap-0">
-			<div class="relative w-full flex items-center justify-center">
+			<div class="relative w-full flex flex-col items-center justify-start xl:justify-center">
 				<h1 id="ascii-art" class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none transition-opacity duration-500">
 			............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
@@ -176,11 +176,33 @@ import Layout from '../layouts/Layout.astro';
 ............................................................................................................................................................................................................................................................................................................
 
 		</h1>
-				<div id="sigil-container" class="absolute top-0 left-0 w-full opacity-0 pointer-events-none transition-opacity duration-500 flex items-center justify-center pb-8 xl:pb-0">
+				<div id="sigil-container" class="absolute top-0 left-0 xl:top-1/2 xl:left-1/2 xl:-translate-x-1/2 xl:-translate-y-1/2 w-full opacity-0 pointer-events-none transition-opacity duration-500 flex flex-col items-center justify-start xl:justify-center gap-4 pb-8 xl:pb-0">
 					<canvas 
 						id="sigil-canvas"
 						class="max-w-md w-full aspect-square border border-gray-700 bg-black"
 					></canvas>
+					<div id="export-buttons-container" class="opacity-0 pointer-events-none transition-opacity duration-500 w-full px-[5%] xl:px-0 xl:absolute xl:left-full xl:top-1/2 xl:-translate-y-1/2 xl:ml-6 xl:w-auto">
+						<div class="flex gap-2 flex-wrap xl:flex-col">
+							<button 
+								id="export-png-btn"
+								class="flex-1 xl:flex-none bg-gray-800 text-white w-[300px] font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
+							>
+								EXPORT PNG
+							</button>
+							<button 
+								id="export-jpeg-btn"
+								class="flex-1 xl:flex-none bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
+							>
+								EXPORT JPEG
+							</button>
+							<button 
+								id="export-pdf-btn"
+								class="flex-1 xl:flex-none bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
+							>
+								EXPORT PDF
+							</button>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="w-full max-w-2xl relative flex flex-col xl:items-center xl:justify-center items-start xl:self-center">
@@ -241,28 +263,6 @@ import Layout from '../layouts/Layout.astro';
 					>
 						REDUCE TO SIGIL
 					</button>
-				</div>
-				<div id="export-buttons-container" class="opacity-0 pointer-events-none transition-opacity duration-500 absolute xl:mt-0 mt-16 left-0 w-full">
-					<div class="flex gap-2 flex-wrap">
-						<button 
-							id="export-png-btn"
-							class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
-						>
-							EXPORT PNG
-						</button>
-						<button 
-							id="export-jpeg-btn"
-							class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
-						>
-							EXPORT JPEG
-						</button>
-						<button 
-							id="export-pdf-btn"
-							class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
-						>
-							EXPORT PDF
-						</button>
-					</div>
 				</div>
 			</div>
 		</div>
