@@ -1,8 +1,11 @@
-import { createHash } from 'crypto';
 export { renderers } from '../../renderers.mjs';
 
 const prerender = false;
 const SECRET_SALT = process.env.SIGIL_SECRET_SALT || "clauneck-secret-salt-change-in-production";
+function createHashSafely(data) {
+  const crypto = require("crypto");
+  return crypto.createHash("sha256").update(data).digest("hex");
+}
 const GET = async () => {
   return new Response(
     JSON.stringify({ status: "ok", message: "Hash API is running" }),
@@ -81,13 +84,14 @@ const POST = async ({ request }) => {
     }
     let hash;
     try {
-      hash = createHash("sha256").update(normalized + SECRET_SALT).digest("hex");
+      hash = createHashSafely(normalized + SECRET_SALT);
     } catch (hashError) {
       console.error("Hash creation error:", hashError);
+      const errorDetails = hashError instanceof Error ? hashError.message : String(hashError);
       return new Response(
         JSON.stringify({
           error: "Failed to create hash",
-          details: String(hashError)
+          details: errorDetails
         }),
         {
           status: 500,
