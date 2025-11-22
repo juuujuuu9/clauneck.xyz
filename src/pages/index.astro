@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<div class="flex items-center justify-center h-auto min-h-screen bg-black text-white px-[5%] xl:pr-[15%] xl:pl-0">
+	<div class="flex items-center justify-center h-auto min-h-dvh bg-black text-white px-[5%] xl:pr-[15%] xl:pl-0">
 		<div class="w-full flex flex-col  xl:flex-row items-center justify-center max-w-none mt-10 xl:mt-0 xl:gap-14 gap-0">
 			<div class="relative w-full flex items-center justify-center">
 				<h1 id="ascii-art" class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none transition-opacity duration-500">
@@ -183,7 +183,7 @@ import Layout from '../layouts/Layout.astro';
 					></canvas>
 				</div>
 			</div>
-			<div class="w-full max-w-2xl relative flex xl:items-center xl:justify-center items-start xl:self-center">
+			<div class="w-full max-w-2xl relative flex flex-col xl:items-center xl:justify-center items-start xl:self-center">
 				<div class="preface transition-opacity duration-500 w-full mb-16 xl:mb-0">
 					<p class="sm:text-sm text-xs text-gray-500 xl:mt-0 mt-10 leading-tight text-center xl:text-left">
 						
@@ -221,7 +221,7 @@ import Layout from '../layouts/Layout.astro';
 						CONTINUE
 					</button>
 				</div>
-				<div class="request opacity-0 pointer-events-none transition-opacity duration-500 absolute xl:mt-0 mt-10 left-0 w-full">
+				<div class="request opacity-0 pointer-events-none transition-opacity duration-500 relative xl:mt-0 mt-10 left-0 w-full" style="display: none;">
 					<p class="sm:text-sm text-xs text-gray-500 leading-tight text-center xl:text-left mb-6">
 						REQUEST<br><br>
 						Describe one outcome in one sentence.<br><br>
@@ -908,8 +908,12 @@ import Layout from '../layouts/Layout.astro';
 
 			setTimeout(() => {
 				preface.remove();
-				request.style.opacity = '1';
-				request.style.pointerEvents = 'auto';
+				request.style.display = 'block';
+				// Small delay to ensure display is applied before opacity transition
+				requestAnimationFrame(() => {
+					request.style.opacity = '1';
+					request.style.pointerEvents = 'auto';
+				});
 			}, 500);
 		});
 	}
