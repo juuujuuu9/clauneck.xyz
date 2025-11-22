@@ -1,11 +1,20 @@
 import type { APIRoute } from 'astro';
-import { createHash } from 'node:crypto';
 
 // Mark as server-rendered endpoint
 export const prerender = false;
 
 // Secret salt - in production, use environment variable
 const SECRET_SALT = process.env.SIGIL_SECRET_SALT || 'clauneck-secret-salt-change-in-production';
+
+// Helper function to hash using Web Crypto API (available in Node.js 15+)
+async function sha256Hash(text: string): Promise<string> {
+	const encoder = new TextEncoder();
+	const data = encoder.encode(text);
+	// crypto.subtle is available globally in Node.js 15+
+	const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 export const POST: APIRoute = async ({ request }): Promise<Response> => {
 	try {
@@ -37,10 +46,8 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 			throw new Error('SECRET_SALT is not configured');
 		}
 
-		// Hash with secret salt: sha256(input + secret)
-		const hash = createHash('sha256')
-			.update(normalized + SECRET_SALT)
-			.digest('hex');
+		// Hash with secret salt: sha256(input + secret) using Web Crypto API
+		const hash = await sha256Hash(normalized + SECRET_SALT);
 
 		return new Response(
 			JSON.stringify({ hash }),
