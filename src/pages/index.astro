@@ -956,18 +956,15 @@ import Layout from '../layouts/Layout.astro';
 				request.style.opacity = '0';
 				request.style.pointerEvents = 'none';
 				
-				// Scroll to top and reset zoom on mobile
-				window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+				// Blur any focused input to prevent mobile zoom
+				if (document.activeElement && document.activeElement instanceof HTMLElement) {
+					document.activeElement.blur();
+				}
 				
 				// Reset viewport zoom if possible
 				const viewport = document.querySelector('meta[name="viewport"]');
 				if (viewport) {
 					viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes');
-				}
-				
-				// Blur any focused input to prevent mobile zoom
-				if (document.activeElement && document.activeElement instanceof HTMLElement) {
-					document.activeElement.blur();
 				}
 				
 				setTimeout(() => {
@@ -976,8 +973,19 @@ import Layout from '../layouts/Layout.astro';
 					exportButtonsContainer.style.opacity = '1';
 					exportButtonsContainer.style.pointerEvents = 'auto';
 					
-					// Ensure we're still at the top after content changes
+					// Scroll to top immediately to show sigil on mobile
 					window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+					
+					// Also scroll the sigil container's parent into view as a backup
+					const sigilParent = sigilContainer.parentElement;
+					if (sigilParent) {
+						sigilParent.scrollIntoView({ behavior: 'instant', block: 'start' });
+					}
+					
+					// Double-check after a brief delay to handle any layout shifts
+					setTimeout(() => {
+						window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+					}, 100);
 				}, 250);
 			}
 		});
