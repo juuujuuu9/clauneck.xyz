@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { webcrypto } from 'node:crypto';
 
 // Mark as server-rendered endpoint
 export const prerender = false;
@@ -10,8 +11,8 @@ const SECRET_SALT = process.env.SIGIL_SECRET_SALT || 'clauneck-secret-salt-chang
 async function sha256Hash(text: string): Promise<string> {
 	const encoder = new TextEncoder();
 	const data = encoder.encode(text);
-	// crypto.subtle is available globally in Node.js 15+
-	const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+	// Use webcrypto from node:crypto for reliable serverless compatibility
+	const hashBuffer = await webcrypto.subtle.digest('SHA-256', data);
 	const hashArray = Array.from(new Uint8Array(hashBuffer));
 	return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
