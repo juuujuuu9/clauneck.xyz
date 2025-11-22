@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { createHash } from 'crypto';
 
 // Mark as server-rendered endpoint
 export const prerender = false;
@@ -8,11 +9,14 @@ const SECRET_SALT = process.env.SIGIL_SECRET_SALT || 'clauneck-secret-salt-chang
 
 // Helper function to safely create hash
 function createHashSafely(data: string): string {
-	// Use dynamic import to ensure crypto is available
-	const crypto = require('crypto');
-	return crypto.createHash('sha256')
-		.update(data)
-		.digest('hex');
+	try {
+		return createHash('sha256')
+			.update(data, 'utf8')
+			.digest('hex');
+	} catch (error) {
+		console.error('Hash creation failed:', error);
+		throw error;
+	}
 }
 
 // Health check endpoint

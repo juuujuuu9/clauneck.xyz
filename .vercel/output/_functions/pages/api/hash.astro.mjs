@@ -1,10 +1,15 @@
+import { createHash } from 'crypto';
 export { renderers } from '../../renderers.mjs';
 
 const prerender = false;
 const SECRET_SALT = process.env.SIGIL_SECRET_SALT || "clauneck-secret-salt-change-in-production";
 function createHashSafely(data) {
-  const crypto = require("crypto");
-  return crypto.createHash("sha256").update(data).digest("hex");
+  try {
+    return createHash("sha256").update(data, "utf8").digest("hex");
+  } catch (error) {
+    console.error("Hash creation failed:", error);
+    throw error;
+  }
 }
 const GET = async () => {
   return new Response(
