@@ -22,10 +22,6 @@
 		{
 			"src": "^/api/hash/?$",
 			"dest": "_render"
-		},
-		{
-			"src": "^/$",
-			"dest": "_render"
 		}
 	]
 }

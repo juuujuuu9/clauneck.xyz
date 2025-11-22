@@ -7,46 +7,57 @@ export const prerender = false;
 // Secret salt - in production, use environment variable
 const SECRET_SALT = process.env.SIGIL_SECRET_SALT || 'clauneck-secret-salt-change-in-production';
 
+// Health check endpoint
+export const GET: APIRoute = async (): Promise<Response> => {
+	return new Response(
+		JSON.stringify({ status: 'ok', message: 'Hash API is running' }),
+		{ 
+			status: 200, 
+			headers: { 'Content-Type': 'application/json' } 
+		}
+	);
+};
+
 export const POST: APIRoute = async ({ request }): Promise<Response> => {
 	try {
-		// Check if request has a body
-		const contentType = request.headers.get('content-type');
-		if (!contentType || !contentType.includes('application/json')) {
-			return new Response(
-				JSON.stringify({ error: 'Content-Type must be application/json' }),
-				{ status: 400, headers: { 'Content-Type': 'application/json' } }
-			);
-		}
-
-		// Parse JSON body with error handling
+		// Parse JSON body - Astro handles this more safely
 		let body: { input?: string };
 		try {
-			const text = await request.text();
-			if (!text || text.trim() === '') {
-				return new Response(
-					JSON.stringify({ error: 'Request body is empty' }),
-					{ status: 400, headers: { 'Content-Type': 'application/json' } }
-				);
-			}
-			body = JSON.parse(text);
+			body = await request.json();
 		} catch (parseError) {
 			return new Response(
 				JSON.stringify({ error: 'Invalid JSON in request body' }),
-				{ status: 400, headers: { 'Content-Type': 'application/json' } }
+				{ 
+					status: 400, 
+					headers: { 'Content-Type': 'application/json' } 
+				}
 			);
 		}
 
-		const input: string = body.input;
+		const input: string | undefined = body?.input;
 
-		if (!input || typeof input !== 'string') {
+		if (!input || typeof input !== 'string' || input.trim() === '') {
 			return new Response(
-				JSON.stringify({ error: 'Invalid input' }),
-				{ status: 400, headers: { 'Content-Type': 'application/json' } }
+				JSON.stringify({ error: 'Invalid input: input is required and must be a non-empty string' }),
+				{ 
+					status: 400, 
+					headers: { 'Content-Type': 'application/json' } 
+				}
 			);
 		}
 
 		// Normalize input
 		const normalized = input.toLowerCase().replace(/\s+/g, ' ').trim();
+
+		if (!normalized) {
+			return new Response(
+				JSON.stringify({ error: 'Invalid input: input cannot be empty after normalization' }),
+				{ 
+					status: 400, 
+					headers: { 'Content-Type': 'application/json' } 
+				}
+			);
+		}
 
 		// Hash with secret salt: sha256(input + secret)
 		const hash = createHash('sha256')
@@ -55,7 +66,13 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 
 		return new Response(
 			JSON.stringify({ hash }),
-			{ status: 200, headers: { 'Content-Type': 'application/json' } }
+			{ 
+				status: 200, 
+				headers: { 
+					'Content-Type': 'application/json',
+					'Cache-Control': 'no-cache, no-store, must-revalidate'
+				} 
+			}
 		);
 	} catch (error) {
 		console.error('Hash API error:', error);
@@ -65,10 +82,13 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 		return new Response(
 			JSON.stringify({ 
 				error: 'Internal server error',
-				details: errorMessage,
-				stack: process.env.NODE_ENV === 'development' ? errorStack : undefined
+				message: errorMessage,
+				...(process.env.NODE_ENV === 'development' && errorStack ? { stack: errorStack } : {})
 			}),
-			{ status: 500, headers: { 'Content-Type': 'application/json' } }
+			{ 
+				status: 500, 
+				headers: { 'Content-Type': 'application/json' } 
+			}
 		);
 	}
 };

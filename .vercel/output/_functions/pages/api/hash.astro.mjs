@@ -3,43 +3,59 @@ export { renderers } from '../../renderers.mjs';
 
 const prerender = false;
 const SECRET_SALT = process.env.SIGIL_SECRET_SALT || "clauneck-secret-salt-change-in-production";
+const GET = async () => {
+  return new Response(
+    JSON.stringify({ status: "ok", message: "Hash API is running" }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    }
+  );
+};
 const POST = async ({ request }) => {
   try {
-    const contentType = request.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      return new Response(
-        JSON.stringify({ error: "Content-Type must be application/json" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
     let body;
     try {
-      const text = await request.text();
-      if (!text || text.trim() === "") {
-        return new Response(
-          JSON.stringify({ error: "Request body is empty" }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
-        );
-      }
-      body = JSON.parse(text);
+      body = await request.json();
     } catch (parseError) {
       return new Response(
         JSON.stringify({ error: "Invalid JSON in request body" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
       );
     }
-    const input = body.input;
-    if (!input || typeof input !== "string") {
+    const input = body?.input;
+    if (!input || typeof input !== "string" || input.trim() === "") {
       return new Response(
-        JSON.stringify({ error: "Invalid input" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Invalid input: input is required and must be a non-empty string" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
       );
     }
     const normalized = input.toLowerCase().replace(/\s+/g, " ").trim();
+    if (!normalized) {
+      return new Response(
+        JSON.stringify({ error: "Invalid input: input cannot be empty after normalization" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
     const hash = createHash("sha256").update(normalized + SECRET_SALT).digest("hex");
     return new Response(
       JSON.stringify({ hash }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate"
+        }
+      }
     );
   } catch (error) {
     console.error("Hash API error:", error);
@@ -48,16 +64,20 @@ const POST = async ({ request }) => {
     return new Response(
       JSON.stringify({
         error: "Internal server error",
-        details: errorMessage,
-        stack: process.env.NODE_ENV === "development" ? errorStack : void 0
+        message: errorMessage,
+        ...process.env.NODE_ENV === "development" && errorStack ? { stack: errorStack } : {}
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
     );
   }
 };
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
 	__proto__: null,
+	GET,
 	POST,
 	prerender
 }, Symbol.toStringTag, { value: 'Module' }));
