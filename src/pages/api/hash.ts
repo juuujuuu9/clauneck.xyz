@@ -9,26 +9,10 @@ const SECRET_SALT = process.env.SIGIL_SECRET_SALT || 'clauneck-secret-salt-chang
 
 export const POST: APIRoute = async ({ request }): Promise<Response> => {
 	try {
-		// Check if request has a body
-		const contentType = request.headers.get('content-type');
-		if (!contentType || !contentType.includes('application/json')) {
-			return new Response(
-				JSON.stringify({ error: 'Content-Type must be application/json' }),
-				{ status: 400, headers: { 'Content-Type': 'application/json' } }
-			);
-		}
-
-		// Parse JSON body with error handling
+		// Parse JSON body directly (Astro handles this reliably)
 		let body: { input?: string };
 		try {
-			const text = await request.text();
-			if (!text || text.trim() === '') {
-				return new Response(
-					JSON.stringify({ error: 'Request body is empty' }),
-					{ status: 400, headers: { 'Content-Type': 'application/json' } }
-				);
-			}
-			body = JSON.parse(text);
+			body = await request.json();
 		} catch (parseError) {
 			return new Response(
 				JSON.stringify({ error: 'Invalid JSON in request body' }),
@@ -48,6 +32,11 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 		// Normalize input
 		const normalized = input.toLowerCase().replace(/\s+/g, ' ').trim();
 
+		// Ensure SECRET_SALT is defined
+		if (!SECRET_SALT) {
+			throw new Error('SECRET_SALT is not configured');
+		}
+
 		// Hash with secret salt: sha256(input + secret)
 		const hash = createHash('sha256')
 			.update(normalized + SECRET_SALT)
@@ -64,7 +53,7 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 		
 		return new Response(
 			JSON.stringify({ 
-				error: 'Internal server error',
+				error: 'A server error has occurred',
 				details: errorMessage,
 				stack: process.env.NODE_ENV === 'development' ? errorStack : undefined
 			}),
