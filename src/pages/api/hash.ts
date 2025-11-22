@@ -19,15 +19,28 @@ export const GET: APIRoute = async (): Promise<Response> => {
 };
 
 export const POST: APIRoute = async ({ request }): Promise<Response> => {
+	// Ensure we always return a valid Response, even if something crashes
 	try {
+		// Validate request exists
+		if (!request) {
+			return new Response(
+				JSON.stringify({ error: 'Request object is missing' }),
+				{ 
+					status: 400, 
+					headers: { 'Content-Type': 'application/json' } 
+				}
+			);
+		}
+
 		// Read request body as text first (more reliable in serverless)
 		let bodyText: string;
 		try {
 			bodyText = await request.text();
 		} catch (readError) {
 			console.error('Failed to read request body:', readError);
+			const errorDetails = readError instanceof Error ? readError.message : String(readError);
 			return new Response(
-				JSON.stringify({ error: 'Failed to read request body', details: String(readError) }),
+				JSON.stringify({ error: 'Failed to read request body', details: errorDetails }),
 				{ 
 					status: 400, 
 					headers: { 'Content-Type': 'application/json' } 
@@ -118,18 +131,33 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 		console.error('Hash API error:', error);
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		const errorStack = error instanceof Error ? error.stack : undefined;
+		const errorName = error instanceof Error ? error.name : 'UnknownError';
 		
-		return new Response(
-			JSON.stringify({ 
-				error: 'Internal server error',
-				message: errorMessage,
-				...(process.env.NODE_ENV === 'development' && errorStack ? { stack: errorStack } : {})
-			}),
-			{ 
-				status: 500, 
-				headers: { 'Content-Type': 'application/json' } 
-			}
-		);
+		// Always return valid JSON, even on error
+		try {
+			return new Response(
+				JSON.stringify({ 
+					error: 'Internal server error',
+					message: errorMessage,
+					name: errorName,
+					...(errorStack ? { stack: errorStack } : {})
+				}),
+				{ 
+					status: 500, 
+					headers: { 'Content-Type': 'application/json' } 
+				}
+			);
+		} catch (responseError) {
+			// If even creating the response fails, log and return minimal response
+			console.error('Failed to create error response:', responseError);
+			return new Response(
+				JSON.stringify({ error: 'Internal server error', message: 'Unable to process request' }),
+				{ 
+					status: 500, 
+					headers: { 'Content-Type': 'application/json' } 
+				}
+			);
+		}
 	}
 };
 
