@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 
 // Mark as server-rendered endpoint
 export const prerender = false;
@@ -20,7 +20,7 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 			);
 		}
 
-		const input: string = body.input;
+		const input = body.input;
 
 		if (!input || typeof input !== 'string') {
 			return new Response(
@@ -32,8 +32,8 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 		// Normalize input
 		const normalized = input.toLowerCase().replace(/\s+/g, ' ').trim();
 
-		// Ensure SECRET_SALT is defined
-		if (!SECRET_SALT) {
+		// Ensure SECRET_SALT is defined (check for both undefined and empty string)
+		if (!SECRET_SALT || SECRET_SALT.trim() === '') {
 			throw new Error('SECRET_SALT is not configured');
 		}
 
