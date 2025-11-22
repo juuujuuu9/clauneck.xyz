@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://clauneck.xyz/sitemap.xml
+
