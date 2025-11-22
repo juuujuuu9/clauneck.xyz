@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 
 // Mark as server-rendered endpoint
 export const prerender = false;
