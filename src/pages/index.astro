@@ -907,9 +907,10 @@ import Layout from '../layouts/Layout.astro';
 			preface.style.pointerEvents = 'none';
 
 			setTimeout(() => {
+				preface.remove();
 				request.style.opacity = '1';
 				request.style.pointerEvents = 'auto';
-			}, 250);
+			}, 500);
 		});
 	}
 
@@ -971,6 +972,8 @@ import Layout from '../layouts/Layout.astro';
 				}
 				
 				setTimeout(() => {
+					asciiArt.remove();
+					request.remove();
 					sigilContainer.style.opacity = '1';
 					sigilContainer.style.pointerEvents = 'auto';
 					exportButtonsContainer.style.opacity = '1';
@@ -978,7 +981,7 @@ import Layout from '../layouts/Layout.astro';
 					
 					// Ensure we're still at the top after content changes
 					window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-				}, 250);
+				}, 500);
 			}
 		});
 	}
