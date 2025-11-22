@@ -3,10 +3,11 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<div class="flex items-start xl:items-center justify-center h-auto min-h-dvh bg-black text-white px-[5%] xl:pr-[15%] xl:pl-0 pt-8 xl:pt-0">
+	<main class="flex items-start xl:items-center justify-center h-auto min-h-dvh bg-black text-white px-[5%] xl:pr-[15%] xl:pl-0 pt-8 xl:pt-0">
 		<div class="w-full flex flex-col  xl:flex-row items-center justify-center max-w-none mt-10 xl:mt-0 xl:gap-14 gap-0">
-			<div class="relative w-full flex flex-col items-center justify-start xl:justify-center">
-				<h1 id="ascii-art" class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none transition-opacity duration-500">
+			<section class="relative w-full flex flex-col items-center justify-start xl:justify-center" aria-label="Sigil visualization">
+				<h1 class="sr-only">Clauneck Sigil Engine - Generate Unique Sigils</h1>
+				<div id="ascii-art" class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none transition-opacity duration-500" aria-hidden="true">
 			............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
@@ -175,11 +176,13 @@ import Layout from '../layouts/Layout.astro';
 ............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
 
-		</h1>
+				</div>
 				<div id="sigil-container" class="absolute top-0 left-0 xl:top-1/2 xl:left-1/2 xl:-translate-x-1/2 xl:-translate-y-1/2 w-full opacity-0 pointer-events-none transition-opacity duration-500 flex flex-col items-center justify-start xl:justify-center gap-4 pb-8 xl:pb-0">
 					<canvas 
 						id="sigil-canvas"
 						class="max-w-md w-full aspect-square border border-gray-700 bg-black"
+						aria-label="Generated sigil visualization"
+						role="img"
 					></canvas>
 					<div id="export-buttons-container" class="opacity-0 pointer-events-none transition-opacity duration-500 w-full px-[5%] xl:px-0 xl:absolute xl:left-full xl:top-1/2 xl:-translate-y-1/2 xl:ml-6 xl:w-auto">
 						<div class="flex gap-2 flex-wrap xl:flex-col">
@@ -204,8 +207,8 @@ import Layout from '../layouts/Layout.astro';
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="w-full max-w-2xl relative flex flex-col xl:items-center xl:justify-center items-start xl:self-center">
+			</section>
+			<section class="w-full max-w-2xl relative flex flex-col xl:items-center xl:justify-center items-start xl:self-center" aria-label="Instructions and request form">
 				<div class="preface transition-opacity duration-500 w-full mb-16 xl:mb-0">
 					<p class="sm:text-sm text-xs text-gray-500 xl:mt-0 mt-10 leading-tight text-center xl:text-left">
 						
@@ -244,17 +247,22 @@ import Layout from '../layouts/Layout.astro';
 					</button>
 				</div>
 				<div class="request opacity-0 pointer-events-none transition-opacity duration-500 relative xl:mt-0 mt-10 left-0 w-full mb-16 xl:mb-0" style="display: none;">
+					<h2 class="sr-only">Request a Sigil</h2>
 					<p class="sm:text-sm text-xs text-gray-500 leading-tight text-center xl:text-left mb-6">
 						REQUEST<br><br>
 						Describe one outcome in one sentence.<br><br>
 						It will be reduced. Not interpreted. Not corrected.
 					</p>
 					
+					<label for="request-input" class="sr-only">Describe your desired outcome in one sentence</label>
 					<textarea 
 						id="request-input"
+						name="request"
 						class="w-full bg-black border border-gray-700 text-white text-sm p-4 font-mono resize-none focus:outline-none focus:border-green-500"
 						rows="6"
 						maxlength="140"
+						aria-label="Describe your desired outcome in one sentence"
+						placeholder="Describe one outcome in one sentence"
 					></textarea>
 					
 					<button 
@@ -264,9 +272,16 @@ import Layout from '../layouts/Layout.astro';
 						REDUCE TO SIGIL
 					</button>
 				</div>
-			</div>
+			</section>
 		</div>
-	</div>
+		<!-- SEO: Hidden content for search engines -->
+		<div class="sr-only">
+			<h2>About Clauneck Sigil Engine</h2>
+			<p>Clauneck Sigil Engine is a powerful tool for generating unique, procedurally created sigils. Transform your intentions into powerful symbols using advanced algorithmic generation. Perfect for practitioners of chaos magick, sigil magick, ritual magick, and modern occultism. Create custom sigils for manifestation, ritual work, or artistic expression.</p>
+			<p>Our sigil generator uses cryptographic hashing and procedural algorithms to create unique symbols based on your input. Each sigil is one-of-a-kind, generated from your specific intention or request. Export your sigils as PNG, JPEG, or PDF formats for use in rituals, artwork, or digital applications.</p>
+			<p>Whether you're working with goetia, demonology, hermeticism, witchcraft, or ceremonial magick, the Clauneck Sigil Engine provides a modern approach to creating magical symbols. Our digital occult tool combines traditional sigil creation methods with contemporary technology.</p>
+		</div>
+	</main>
 </Layout>
 
 <script>
