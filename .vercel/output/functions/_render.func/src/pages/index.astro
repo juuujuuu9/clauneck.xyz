@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="en" data-astro-cid-sckkx6r4> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"><link rel="icon" type="image/jpeg" href="/favicon.jpg"><meta name="generator" content="Astro v5.16.0"><title>Clauneck Sigil Engine</title><script type="module">console.log(`
-▄█████ ██     ▄████▄ ██  ██ ███  ██ ██████ ▄█████ ██ ▄█▀ 
-██     ██     ██▄▄██ ██  ██ ██ ▀▄██ ██▄▄   ██     ████   
-▀█████ ██████ ██  ██ ▀████▀ ██   ██ ██▄▄▄▄ ▀█████ ██ ▀█▄ 
-														`);console.log(`
-░█▀▀░▀█▀░█▀▀░▀█▀░█░░░░░█▀▀░█▀█░█▀▀░▀█▀░█▀█░█▀▀░░░█░█░░░░▀█░░░░░▄▀▄
-░▀▀█░░█░░█░█░░█░░█░░░░░█▀▀░█░█░█░█░░█░░█░█░█▀▀░░░▀▄▀░░░░░█░░░░░█/█
-░▀▀▀░▀▀▀░▀▀▀░▀▀▀░▀▀▀░░░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░░░▀░░▀░░▀▀▀░▀░░░▀░
-														`);</script><link rel="stylesheet" href="/_astro/index.CHxAVS-m.css"></head> <body data-astro-cid-sckkx6r4>  <div class="flex items-center justify-center h-auto min-h-screen bg-black text-white px-[5%] xl:pr-[15%] xl:pl-0"> <div class="w-full flex flex-col  xl:flex-row items-center justify-center max-w-none mt-10 xl:mt-0 xl:gap-14 gap-0"> <div class="relative w-full flex items-center justify-center"> <h1 id="ascii-art" class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none transition-opacity duration-500">
-............................................................................................................................................................................................................................................................................................................
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+	<div class="flex items-center justify-center h-auto min-h-screen bg-black text-white px-[5%] xl:pr-[15%] xl:pl-0">
+		<div class="w-full flex flex-col  xl:flex-row items-center justify-center max-w-none mt-10 xl:mt-0 xl:gap-14 gap-0">
+			<div class="relative w-full flex items-center justify-center">
+				<h1 id="ascii-art" class="text-green-500 font-mono whitespace-pre xl:text-[3.5px] sm:text-[3px] text-[2px] leading-none transition-opacity duration-500">
+			............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
 ................................................................................................................................................$$$$$$$$$$$$$$$.............................................................................................................................................
@@ -174,36 +174,824 @@
 ...................................................................................................$$$$$$$$$$$$$$$$$$$$$$$$$$$$.............................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
 ............................................................................................................................................................................................................................................................................................................
-</h1> <div id="sigil-container" class="absolute top-0 left-0 w-full opacity-0 pointer-events-none transition-opacity duration-500 flex items-center justify-center"> <canvas id="sigil-canvas" class="max-w-md w-full aspect-square border border-gray-700 bg-black"></canvas> </div> </div> <div class="w-full max-w-2xl relative flex xl:items-center xl:justify-center items-start xl:self-center"> <div class="preface transition-opacity duration-500 w-full mb-16 xl:mb-0"> <p class="sm:text-sm text-xs text-gray-500 xl:mt-0 mt-10 leading-tight text-center xl:text-left">
-CLAUNECK DOES NOT SEEK WORSHIP.<br><br>
-CLAUNECK DOES NOT SEEK PRAISE.<br><br>
-CLAUNECK OBSERVES.<br><br>
-WHAT IS GIVEN<br>WITHOUT PURPOSE IS WASTED.<br><br>
-WHAT IS HOARDED<br>WITHOUT ORDER IS ROTTEN.<br><br>
-WHAT IS DESIRED<br>WITHOUT DISCIPLINE IS A CHAIN.<br><br>
-THE DOOR IS NOT OPEN TO BEGGARS.<br><br>
-THE DOOR IS NOT OPEN TO FOOLS.<br><br>
-THE DOOR IS NOT OPEN TO THOSE WHO CONFUSE LUCK WITH POWER.<br><br>
-COUNT WHAT IS YOURS.<br><br>
-NAME WHAT IS OWED.<br><br>
-UNTANGLE WHAT BINDS YOU.<br><br>
-ONLY THEN DOES VALUE MOVE.<br><br>
-ONLY THEN DOES FORTUNE SHIFT.<br><br>
-ONLY THEN DOES THE VEIL THIN.<br><br>
-IF YOU UNDERSTAND THE COST, CONTINUE.<br><br>
-IF YOU HESITATE, LEAVE.<br><br>
-THIS PLACE REMEMBERS.<br><br> </p> <button id="continue-btn" class="mt-4 w-full bg-green-500 text-black font-mono text-sm py-3 px-6 hover:bg-green-400 transition-colors">
-CONTINUE
-</button> </div> <div class="request opacity-0 pointer-events-none transition-opacity duration-500 absolute xl:mt-0 mt-10 left-0 w-full"> <p class="sm:text-sm text-xs text-gray-500 leading-tight text-center xl:text-left mb-6">
-REQUEST<br><br>
-Describe one outcome in one sentence.<br><br>
-It will be reduced. Not interpreted. Not corrected.
-</p> <textarea id="request-input" class="w-full bg-black border border-gray-700 text-white text-sm p-4 font-mono resize-none focus:outline-none focus:border-green-500" rows="6" maxlength="140"></textarea> <button id="generate-btn" class="mt-4 w-full bg-green-500 text-black font-mono text-sm py-3 px-6 hover:bg-green-400 transition-colors">
-REDUCE TO SIGIL
-</button> </div> <div id="export-buttons-container" class="opacity-0 pointer-events-none transition-opacity duration-500 absolute xl:mt-8 mt-16 left-0 w-full"> <div class="flex gap-2 flex-wrap"> <button id="export-png-btn" class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700">
-EXPORT PNG
-</button> <button id="export-jpeg-btn" class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700">
-EXPORT JPEG
-</button> <button id="export-pdf-btn" class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700">
-EXPORT PDF
-</button> </div> </div> </div> </div> </div>  </body></html> <script type="module" src="/_astro/index.astro_astro_type_script_index_0_lang.CbxyOXAM.js"></script>
+
+		</h1>
+				<div id="sigil-container" class="absolute top-0 left-0 w-full opacity-0 pointer-events-none transition-opacity duration-500 flex items-center justify-center pb-8 xl:pb-0">
+					<canvas 
+						id="sigil-canvas"
+						class="max-w-md w-full aspect-square border border-gray-700 bg-black"
+					></canvas>
+				</div>
+			</div>
+			<div class="w-full max-w-2xl relative flex xl:items-center xl:justify-center items-start xl:self-center">
+				<div class="preface transition-opacity duration-500 w-full mb-16 xl:mb-0">
+					<p class="sm:text-sm text-xs text-gray-500 xl:mt-0 mt-10 leading-tight text-center xl:text-left">
+						
+						CLAUNECK DOES NOT SEEK WORSHIP.<br><br>
+
+						CLAUNECK DOES NOT SEEK PRAISE.<br><br>
+						
+						CLAUNECK OBSERVES.<br><br>
+						
+						WHAT IS GIVEN<br>WITHOUT PURPOSE IS WASTED.<br><br>
+						WHAT IS HOARDED<br>WITHOUT ORDER IS ROTTEN.<br><br>
+						WHAT IS DESIRED<br>WITHOUT DISCIPLINE IS A CHAIN.<br><br>		
+						
+						THE DOOR IS NOT OPEN TO BEGGARS.<br><br>									
+						THE DOOR IS NOT OPEN TO FOOLS.<br><br>
+						THE DOOR IS NOT OPEN TO THOSE WHO CONFUSE LUCK WITH POWER.<br><br>
+						
+						COUNT WHAT IS YOURS.<br><br>
+						NAME WHAT IS OWED.<br><br>
+						UNTANGLE WHAT BINDS YOU.<br><br>
+						
+						ONLY THEN DOES VALUE MOVE.<br><br>
+						ONLY THEN DOES FORTUNE SHIFT.<br><br>
+						ONLY THEN DOES THE VEIL THIN.<br><br>
+						
+						IF YOU UNDERSTAND THE COST, CONTINUE.<br><br>
+						IF YOU HESITATE, LEAVE.<br><br>
+						
+						THIS PLACE REMEMBERS.<br><br>
+					</p>
+					<button 
+						id="continue-btn"
+						class="mt-4 w-full bg-green-500 text-black font-mono text-sm py-3 px-6 hover:bg-green-400 transition-colors"
+					>
+						CONTINUE
+					</button>
+				</div>
+				<div class="request opacity-0 pointer-events-none transition-opacity duration-500 absolute xl:mt-0 mt-10 left-0 w-full">
+					<p class="sm:text-sm text-xs text-gray-500 leading-tight text-center xl:text-left mb-6">
+						REQUEST<br><br>
+						Describe one outcome in one sentence.<br><br>
+						It will be reduced. Not interpreted. Not corrected.
+					</p>
+					
+					<textarea 
+						id="request-input"
+						class="w-full bg-black border border-gray-700 text-white text-sm p-4 font-mono resize-none focus:outline-none focus:border-green-500"
+						rows="6"
+						maxlength="140"
+					></textarea>
+					
+					<button 
+						id="generate-btn"
+						class="mt-4 w-full bg-green-500 text-black font-mono text-sm py-3 px-6 hover:bg-green-400 transition-colors"
+					>
+						REDUCE TO SIGIL
+					</button>
+				</div>
+				<div id="export-buttons-container" class="opacity-0 pointer-events-none transition-opacity duration-500 absolute xl:mt-0 mt-16 left-0 w-full">
+					<div class="flex gap-2 flex-wrap">
+						<button 
+							id="export-png-btn"
+							class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
+						>
+							EXPORT PNG
+						</button>
+						<button 
+							id="export-jpeg-btn"
+							class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
+						>
+							EXPORT JPEG
+						</button>
+						<button 
+							id="export-pdf-btn"
+							class="flex-1 bg-gray-800 text-white font-mono text-xs py-2 px-4 hover:bg-gray-700 transition-colors border border-gray-700"
+						>
+							EXPORT PDF
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	// Hash function - calls server API with secret salt
+	async function hash(input: string): Promise<string> {
+		const response = await fetch('/api/hash', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ input })
+		});
+		
+		if (!response.ok) {
+			throw new Error('Failed to hash input');
+		}
+		
+		const data = await response.json();
+		return data.hash;
+	}
+
+	// Seeded RNG - multiple generators from hash
+	function createRNGs(hashStr: string): Array<() => number> {
+		const rngs: Array<() => number> = [];
+		
+		// Create multiple RNGs from different parts of the hash
+		for (let i = 0; i < 8; i++) {
+			const seed = parseInt(hashStr.substring(i * 8, (i + 1) * 8), 16) || 1;
+			let h = seed;
+			rngs.push(() => {
+				h = Math.imul(1597334677, h) >>> 0;
+				return h / 4294967296;
+			});
+		}
+		
+		return rngs;
+	}
+
+	// Extract multiple seeds from hash for different purposes
+	function extractSeeds(hashStr: string): {
+		matrix: number;
+		symmetry: number;
+		iterations: number;
+		color: number;
+		noise: number;
+		structure: number;
+	} {
+		return {
+			matrix: parseInt(hashStr.substring(0, 8), 16) || 1,
+			symmetry: parseInt(hashStr.substring(8, 16), 16) || 1,
+			iterations: parseInt(hashStr.substring(16, 24), 16) || 1,
+			color: parseInt(hashStr.substring(24, 32), 16) || 1,
+			noise: parseInt(hashStr.substring(32, 40), 16) || 1,
+			structure: parseInt(hashStr.substring(40, 48), 16) || 1,
+		};
+	}
+
+	// Setup canvas for high-DPI displays
+	function setupCanvas(canvas: HTMLCanvasElement): { ctx: CanvasRenderingContext2D; size: number; dpr: number } | null {
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return null;
+
+		const dpr = window.devicePixelRatio || 1;
+		
+		// Force a layout recalculation by temporarily making visible
+		const wasHidden = canvas.style.display === 'none' || canvas.style.visibility === 'hidden';
+		if (wasHidden) {
+			const originalDisplay = canvas.style.display;
+			const originalVisibility = canvas.style.visibility;
+			canvas.style.display = 'block';
+			canvas.style.visibility = 'visible';
+			// Force reflow
+			void canvas.offsetHeight;
+		}
+		
+		const rect = canvas.getBoundingClientRect();
+		const computedStyle = window.getComputedStyle(canvas);
+		
+		// Get actual rendered size
+		let displaySize = rect.width;
+		if (displaySize <= 0 || isNaN(displaySize)) {
+			const widthStr = computedStyle.width;
+			displaySize = widthStr ? parseInt(widthStr) : 400;
+		}
+		
+		// Ensure we have a valid size
+		displaySize = Math.max(100, Math.min(displaySize, 400));
+		
+		// Restore original visibility if it was hidden
+		if (wasHidden) {
+			canvas.style.display = '';
+			canvas.style.visibility = '';
+		}
+		
+		// Get the actual rendered size after CSS has applied aspect-square
+		const finalRect = canvas.getBoundingClientRect();
+		const finalSize = Math.min(finalRect.width, finalRect.height) || displaySize;
+		
+		// Set internal resolution (device pixels) - use square dimensions
+		canvas.width = finalSize * dpr;
+		canvas.height = finalSize * dpr;
+		
+		// Don't override CSS - let aspect-square handle the sizing
+		// The canvas internal resolution is set above for crisp rendering
+
+		// Reset transform and scale for high-DPI
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.scale(dpr, dpr);
+		
+		return { ctx, size: finalSize, dpr };
+	}
+
+	// Double Random Matrix - generates transformation weights
+	function createDoubleRandomMatrix(size: number, rng: () => number): number[][] {
+		const matrix: number[][] = [];
+		for (let i = 0; i < size; i++) {
+			matrix[i] = [];
+			let rowSum = 0;
+			for (let j = 0; j < size; j++) {
+				matrix[i][j] = rng();
+				rowSum += matrix[i][j];
+			}
+			// Normalize row (double random: rows sum to 1)
+			for (let j = 0; j < size; j++) {
+				matrix[i][j] /= rowSum;
+			}
+		}
+		// Normalize columns (double random: columns also sum to 1)
+		for (let j = 0; j < size; j++) {
+			let colSum = 0;
+			for (let i = 0; i < size; i++) {
+				colSum += matrix[i][j];
+			}
+			for (let i = 0; i < size; i++) {
+				matrix[i][j] /= colSum;
+			}
+		}
+		return matrix;
+	}
+
+	// Affine transformation for IFS (Iterative Function System)
+	function applyAffineTransform(
+		x: number, y: number,
+		a: number, b: number, c: number, d: number, e: number, f: number
+	): { x: number; y: number } {
+		return {
+			x: a * x + b * y + e,
+			y: c * x + d * y + f
+		};
+	}
+
+	// Draw a regular polygon
+	function drawPolygon(
+		ctx: CanvasRenderingContext2D,
+		x: number, y: number,
+		radius: number,
+		sides: number,
+		rotation: number = 0
+	): void {
+		ctx.beginPath();
+		for (let i = 0; i <= sides; i++) {
+			const angle = (i * Math.PI * 2 / sides) + rotation;
+			const px = x + Math.cos(angle) * radius;
+			const py = y + Math.sin(angle) * radius;
+			if (i === 0) {
+				ctx.moveTo(px, py);
+			} else {
+				ctx.lineTo(px, py);
+			}
+		}
+		ctx.stroke();
+	}
+
+	// Draw a star shape
+	function drawStar(
+		ctx: CanvasRenderingContext2D,
+		x: number, y: number,
+		outerRadius: number,
+		innerRadius: number,
+		points: number,
+		rotation: number = 0
+	): void {
+		ctx.beginPath();
+		for (let i = 0; i <= points * 2; i++) {
+			const angle = (i * Math.PI / points) + rotation;
+			const radius = i % 2 === 0 ? outerRadius : innerRadius;
+			const px = x + Math.cos(angle) * radius;
+			const py = y + Math.sin(angle) * radius;
+			if (i === 0) {
+				ctx.moveTo(px, py);
+			} else {
+				ctx.lineTo(px, py);
+			}
+		}
+		ctx.closePath();
+		ctx.stroke();
+	}
+
+	// Draw various shapes
+	function drawShape(
+		ctx: CanvasRenderingContext2D,
+		x: number, y: number,
+		size: number,
+		shapeType: number,
+		rotation: number = 0
+	): void {
+		const shape = shapeType % 6;
+		
+		if (shape === 0) {
+			// Circle
+			ctx.beginPath();
+			ctx.arc(x, y, size, 0, Math.PI * 2);
+			ctx.stroke();
+		} else if (shape === 1) {
+			// Square
+			ctx.beginPath();
+			ctx.save();
+			ctx.translate(x, y);
+			ctx.rotate(rotation);
+			ctx.rect(-size, -size, size * 2, size * 2);
+			ctx.restore();
+			ctx.stroke();
+		} else if (shape === 2) {
+			// Triangle
+			ctx.beginPath();
+			ctx.save();
+			ctx.translate(x, y);
+			ctx.rotate(rotation);
+			ctx.moveTo(0, -size);
+			ctx.lineTo(-size * 0.866, size * 0.5);
+			ctx.lineTo(size * 0.866, size * 0.5);
+			ctx.closePath();
+			ctx.restore();
+			ctx.stroke();
+		} else if (shape === 3) {
+			// Hexagon
+			drawPolygon(ctx, x, y, size, 6, rotation);
+		} else if (shape === 4) {
+			// Star (5-pointed)
+			const innerRadius = size * 0.4;
+			drawStar(ctx, x, y, size, innerRadius, 5, rotation);
+		} else {
+			// Diamond/Rhombus
+			ctx.beginPath();
+			ctx.save();
+			ctx.translate(x, y);
+			ctx.rotate(rotation);
+			ctx.moveTo(0, -size);
+			ctx.lineTo(size, 0);
+			ctx.lineTo(0, size);
+			ctx.lineTo(-size, 0);
+			ctx.closePath();
+			ctx.restore();
+			ctx.stroke();
+		}
+	}
+
+	// Sigil generation with randomized origins, axes, clustering, and random points
+	function generateSigil(
+		ctx: CanvasRenderingContext2D,
+		size: number,
+		dpr: number,
+		rngs: Array<() => number>,
+		seeds: ReturnType<typeof extractSeeds>
+	): void {
+		ctx.clearRect(0, 0, size, size);
+		ctx.save();
+
+		const centerX = size / 2;
+		const centerY = size / 2;
+		ctx.translate(centerX, centerY);
+
+		// Determine symmetry/axes from seed - variable number
+		const numAxes = 2 + (seeds.symmetry % 7); // 2-8 axes
+		const baseRotation = (seeds.symmetry % 360) * Math.PI / 180;
+
+		// Color from seed
+		const hue = (seeds.color % 360);
+		const saturation = 50 + (seeds.color % 30);
+		const lightness = 35 + (seeds.color % 20);
+		ctx.strokeStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+		ctx.lineWidth = 0.8 + rngs[0]() * 1.5;
+
+		const maxRadius = size * (0.35 + rngs[1]() * 0.15);
+
+		// Determine line origin type
+		const originType = seeds.matrix % 4; // 0=center, 1=fixed origin, 2=random points, 3=mixed
+		
+		// Fixed origin point (if not center)
+		let fixedOrigin: { x: number; y: number } | null = null;
+		if (originType === 1 || originType === 3) {
+			const originAngle = rngs[2]() * Math.PI * 2;
+			const originRadius = maxRadius * (0.1 + rngs[3]() * 0.3);
+			fixedOrigin = {
+				x: Math.cos(originAngle) * originRadius,
+				y: Math.sin(originAngle) * originRadius
+			};
+		}
+
+		// Random origin points
+		const randomOrigins: Array<{ x: number; y: number }> = [];
+		if (originType === 2 || originType === 3) {
+			const numRandomOrigins = 2 + Math.floor(rngs[4]() * 4); // 2-5
+			for (let i = 0; i < numRandomOrigins; i++) {
+				const angle = rngs[(i + 5) % rngs.length]() * Math.PI * 2;
+				const radius = maxRadius * (0.1 + rngs[(i + 6) % rngs.length]() * 0.4);
+				randomOrigins.push({
+					x: Math.cos(angle) * radius,
+					y: Math.sin(angle) * radius
+				});
+			}
+		}
+
+		// Corner clustering option
+		const useCornerClustering = rngs[5]() > 0.5; // 50% chance
+		const cornerPoints: Array<{ x: number; y: number; size: number; shape: number; rotation: number }> = [];
+		
+		if (useCornerClustering) {
+			const numCornerClusters = 1 + Math.floor(rngs[6]() * 3); // 1-3 corners
+			const corners = [
+				{ x: -maxRadius * 0.8, y: -maxRadius * 0.8 }, // Top-left
+				{ x: maxRadius * 0.8, y: -maxRadius * 0.8 },  // Top-right
+				{ x: -maxRadius * 0.8, y: maxRadius * 0.8 },   // Bottom-left
+				{ x: maxRadius * 0.8, y: maxRadius * 0.8 }    // Bottom-right
+			];
+			
+			for (let i = 0; i < numCornerClusters; i++) {
+				const corner = corners[i % 4];
+				const clusterSize = 2 + Math.floor(rngs[7]() * 4); // 2-5 points per cluster
+				for (let j = 0; j < clusterSize; j++) {
+					const offsetX = (rngs[(i * 10 + j) % rngs.length]() - 0.5) * maxRadius * 0.15;
+					const offsetY = (rngs[(i * 10 + j + 1) % rngs.length]() - 0.5) * maxRadius * 0.15;
+					const size = 1 + rngs[(i * 10 + j + 2) % rngs.length]() * 3.5; // 1-4.5
+					const shapeType = Math.floor(rngs[(i * 10 + j + 3) % rngs.length]() * 6);
+					const rotation = rngs[(i * 10 + j + 4) % rngs.length]() * Math.PI * 2;
+					cornerPoints.push({
+						x: corner.x + offsetX,
+						y: corner.y + offsetY,
+						size: size,
+						shape: shapeType,
+						rotation: rotation
+					});
+				}
+			}
+		}
+
+		// Regular ring points with shape types
+		const numPoints = 3 + (seeds.structure % 8);
+		const ringPoints: Array<{ x: number; y: number; size: number; shape: number; rotation: number }> = [];
+		
+		for (let i = 0; i < numPoints; i++) {
+			const baseAngle = (i * Math.PI * 2 / numPoints) + baseRotation;
+			const angleVariation = (rngs[i % rngs.length]() - 0.5) * 0.4;
+			const angle = baseAngle + angleVariation;
+			const radius = maxRadius * (0.4 + rngs[(i + 2) % rngs.length]() * 0.5);
+			const nodeSize = 1 + rngs[(i + 3) % rngs.length]() * 4; // More size variation: 1-5
+			const shapeType = Math.floor(rngs[(i + 4) % rngs.length]() * 6); // 0-5 shapes
+			const rotation = rngs[(i + 5) % rngs.length]() * Math.PI * 2;
+			
+			ringPoints.push({
+				x: Math.cos(angle) * radius,
+				y: Math.sin(angle) * radius,
+				size: nodeSize,
+				shape: shapeType,
+				rotation: rotation
+			});
+		}
+
+		// Apply axes symmetry to ring points
+		const allRingPoints: Array<{ x: number; y: number; size: number; shape: number; rotation: number }> = [];
+		for (const point of ringPoints) {
+			for (let s = 0; s < numAxes; s++) {
+				const rot = (s * Math.PI * 2) / numAxes;
+				const cos = Math.cos(rot);
+				const sin = Math.sin(rot);
+				allRingPoints.push({
+					x: point.x * cos - point.y * sin,
+					y: point.x * sin + point.y * cos,
+					size: point.size,
+					shape: point.shape,
+					rotation: point.rotation + rot
+				});
+			}
+		}
+
+		// Random scattered points
+		const numRandomPoints = Math.floor(rngs[0]() * 8); // 0-7
+		const randomPoints: Array<{ x: number; y: number; size: number; shape: number; rotation: number }> = [];
+		for (let i = 0; i < numRandomPoints; i++) {
+			const angle = rngs[(i + 1) % rngs.length]() * Math.PI * 2;
+			const radius = maxRadius * (0.2 + rngs[(i + 2) % rngs.length]() * 0.7);
+			const size = 0.8 + rngs[(i + 3) % rngs.length]() * 3.5; // 0.8-4.3
+			const shapeType = Math.floor(rngs[(i + 4) % rngs.length]() * 6);
+			const rotation = rngs[(i + 5) % rngs.length]() * Math.PI * 2;
+			randomPoints.push({
+				x: Math.cos(angle) * radius,
+				y: Math.sin(angle) * radius,
+				size: size,
+				shape: shapeType,
+				rotation: rotation
+			});
+		}
+
+		// Combine all points
+		const allPoints = [...allRingPoints, ...cornerPoints, ...randomPoints];
+
+		// Draw center (if using center origin)
+		if (originType === 0 || originType === 3) {
+			const centerSize = 1.5 + rngs[0]() * 3.5; // 1.5-5
+			const centerShape = Math.floor(rngs[1]() * 6);
+			const centerRotation = rngs[2]() * Math.PI * 2;
+			drawShape(ctx, 0, 0, centerSize, centerShape, centerRotation);
+		}
+
+		// Draw fixed origin (if exists)
+		if (fixedOrigin) {
+			const originSize = 1.5 + rngs[1]() * 2.5; // 1.5-4
+			const originShape = Math.floor(rngs[2]() * 6);
+			const originRotation = rngs[3]() * Math.PI * 2;
+			drawShape(ctx, fixedOrigin.x, fixedOrigin.y, originSize, originShape, originRotation);
+		}
+
+		// Draw random origins
+		for (let i = 0; i < randomOrigins.length; i++) {
+			const origin = randomOrigins[i];
+			const originSize = 1 + rngs[(i + 2) % rngs.length]() * 2.5; // 1-3.5
+			const originShape = Math.floor(rngs[(i + 3) % rngs.length]() * 6);
+			const originRotation = rngs[(i + 4) % rngs.length]() * Math.PI * 2;
+			drawShape(ctx, origin.x, origin.y, originSize, originShape, originRotation);
+		}
+
+		// Draw all nodes with varied shapes
+		for (const point of allPoints) {
+			drawShape(ctx, point.x, point.y, point.size, point.shape, point.rotation);
+		}
+
+		// Draw lines from various origins
+		ctx.lineWidth = 0.8 + rngs[3]() * 1.2;
+
+		// Lines from center
+		if (originType === 0 || originType === 3) {
+			const centerLineProb = 0.3 + rngs[4]() * 0.4; // 0.3-0.7
+			for (const point of allPoints) {
+				if (rngs[5]() > centerLineProb) {
+					ctx.beginPath();
+					ctx.moveTo(0, 0);
+					ctx.lineTo(point.x, point.y);
+					ctx.stroke();
+				}
+			}
+		}
+
+		// Lines from fixed origin
+		if (fixedOrigin) {
+			const fixedOriginProb = 0.4 + rngs[6]() * 0.3; // 0.4-0.7
+			for (const point of allPoints) {
+				if (rngs[7]() > fixedOriginProb) {
+					ctx.beginPath();
+					ctx.moveTo(fixedOrigin.x, fixedOrigin.y);
+					ctx.lineTo(point.x, point.y);
+					ctx.stroke();
+				}
+			}
+		}
+
+		// Lines from random origins
+		for (let origIdx = 0; origIdx < randomOrigins.length; origIdx++) {
+			const origin = randomOrigins[origIdx];
+			const randomOriginProb = 0.5 + rngs[(origIdx + 4) % rngs.length]() * 0.3; // 0.5-0.8
+			const numConnections = Math.floor(rngs[(origIdx + 5) % rngs.length]() * (allPoints.length / 2));
+			for (let i = 0; i < numConnections; i++) {
+				const pointIdx = Math.floor(rngs[(origIdx + i + 6) % rngs.length]() * allPoints.length);
+				const point = allPoints[pointIdx];
+				if (rngs[(origIdx + i + 7) % rngs.length]() > randomOriginProb) {
+					ctx.beginPath();
+					ctx.moveTo(origin.x, origin.y);
+					ctx.lineTo(point.x, point.y);
+					ctx.stroke();
+				}
+			}
+		}
+
+		// Connect points to each other (ring connections or star patterns)
+		const connectionStyle = seeds.noise % 4;
+		if (connectionStyle === 0 && allRingPoints.length > 1) {
+			// Connect ring points
+			for (let i = 0; i < allRingPoints.length; i++) {
+				const nextI = (i + 1) % allRingPoints.length;
+				const p1 = allRingPoints[i];
+				const p2 = allRingPoints[nextI];
+				
+				if (rngs[i % rngs.length]() > 0.3) {
+					ctx.beginPath();
+					ctx.moveTo(p1.x, p1.y);
+					ctx.lineTo(p2.x, p2.y);
+					ctx.stroke();
+				}
+			}
+		} else if (connectionStyle === 1) {
+			// Star pattern from center
+			if (allRingPoints.length > 2) {
+				const starPoints = 3 + Math.floor(rngs[0]() * 6); // 3-8 points
+				const skip = Math.max(1, Math.floor(allRingPoints.length / starPoints));
+				for (let i = 0; i < starPoints; i++) {
+					const idx = (i * skip) % allRingPoints.length;
+					const point = allRingPoints[idx];
+					ctx.beginPath();
+					ctx.moveTo(0, 0);
+					ctx.lineTo(point.x, point.y);
+					ctx.stroke();
+				}
+				// Connect star points
+				for (let i = 0; i < starPoints; i++) {
+					const idx1 = (i * skip) % allRingPoints.length;
+					const idx2 = ((i + 1) * skip) % allRingPoints.length;
+					const p1 = allRingPoints[idx1];
+					const p2 = allRingPoints[idx2];
+					ctx.beginPath();
+					ctx.moveTo(p1.x, p1.y);
+					ctx.lineTo(p2.x, p2.y);
+					ctx.stroke();
+				}
+			}
+		} else if (connectionStyle === 2) {
+			// Star pattern from random origin
+			if (allPoints.length > 2 && (fixedOrigin || randomOrigins.length > 0)) {
+				const starOrigin = fixedOrigin || randomOrigins[0];
+				const starPoints = 3 + Math.floor(rngs[1]() * 6); // 3-8 points
+				const selectedPoints: Array<{ x: number; y: number }> = [];
+				for (let i = 0; i < starPoints; i++) {
+					const idx = Math.floor(rngs[(i + 2) % rngs.length]() * allPoints.length);
+					selectedPoints.push(allPoints[idx]);
+				}
+				// Connect to origin
+				for (const point of selectedPoints) {
+					ctx.beginPath();
+					ctx.moveTo(starOrigin.x, starOrigin.y);
+					ctx.lineTo(point.x, point.y);
+					ctx.stroke();
+				}
+				// Connect points in star pattern
+				for (let i = 0; i < selectedPoints.length; i++) {
+					const nextI = (i + 1) % selectedPoints.length;
+					const p1 = selectedPoints[i];
+					const p2 = selectedPoints[nextI];
+					ctx.beginPath();
+					ctx.moveTo(p1.x, p1.y);
+					ctx.lineTo(p2.x, p2.y);
+					ctx.stroke();
+				}
+			}
+		} else {
+			// Random connections between all points
+			for (let i = 0; i < allPoints.length; i++) {
+				if (rngs[i % rngs.length]() > 0.7) {
+					const targetIdx = Math.floor(rngs[(i + 1) % rngs.length]() * allPoints.length);
+					if (targetIdx !== i) {
+						const p1 = allPoints[i];
+						const p2 = allPoints[targetIdx];
+						ctx.beginPath();
+						ctx.moveTo(p1.x, p1.y);
+						ctx.lineTo(p2.x, p2.y);
+						ctx.stroke();
+					}
+				}
+			}
+		}
+
+		// Connect corner clusters
+		if (cornerPoints.length > 1) {
+			for (let i = 0; i < cornerPoints.length - 1; i++) {
+				if (rngs[i % rngs.length]() > 0.6) {
+					const p1 = cornerPoints[i];
+					const p2 = cornerPoints[i + 1];
+					const dist = Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+					if (dist < maxRadius * 0.5) {
+						ctx.beginPath();
+						ctx.moveTo(p1.x, p1.y);
+						ctx.lineTo(p2.x, p2.y);
+						ctx.stroke();
+					}
+				}
+			}
+		}
+
+		ctx.restore();
+	}
+
+	// Export functions
+	function exportPNG(canvas: HTMLCanvasElement): void {
+		const link = document.createElement('a');
+		link.download = 'sigil.png';
+		link.href = canvas.toDataURL('image/png');
+		link.click();
+	}
+
+	function exportJPEG(canvas: HTMLCanvasElement): void {
+		const link = document.createElement('a');
+		link.download = 'sigil.jpg';
+		link.href = canvas.toDataURL('image/jpeg', 0.95);
+		link.click();
+	}
+
+	async function exportPDF(canvas: HTMLCanvasElement): Promise<void> {
+		const { jsPDF } = await import('jspdf');
+		const pdf = new jsPDF({
+			orientation: 'portrait',
+			unit: 'px',
+			format: [canvas.width, canvas.height]
+		});
+
+		pdf.addImage(
+			canvas.toDataURL('image/png'),
+			'PNG',
+			0,
+			0,
+			canvas.width,
+			canvas.height
+		);
+		pdf.save('sigil.pdf');
+	}
+
+	// UI elements
+	const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement | null;
+	const preface = document.querySelector('.preface') as HTMLElement | null;
+	const request = document.querySelector('.request') as HTMLElement | null;
+	const generateBtn = document.getElementById('generate-btn') as HTMLButtonElement | null;
+	const requestInput = document.getElementById('request-input') as HTMLTextAreaElement | null;
+	const sigilContainer = document.getElementById('sigil-container') as HTMLElement | null;
+	const canvas = document.getElementById('sigil-canvas') as HTMLCanvasElement | null;
+	const exportPngBtn = document.getElementById('export-png-btn') as HTMLButtonElement | null;
+	const exportJpegBtn = document.getElementById('export-jpeg-btn') as HTMLButtonElement | null;
+	const exportPdfBtn = document.getElementById('export-pdf-btn') as HTMLButtonElement | null;
+	const asciiArt = document.getElementById('ascii-art') as HTMLElement | null;
+	const exportButtonsContainer = document.getElementById('export-buttons-container') as HTMLElement | null;
+
+	if (continueBtn && preface && request) {
+		continueBtn.addEventListener('click', () => {
+			preface.style.opacity = '0';
+			preface.style.pointerEvents = 'none';
+
+			setTimeout(() => {
+				request.style.opacity = '1';
+				request.style.pointerEvents = 'auto';
+			}, 250);
+		});
+	}
+
+	if (generateBtn && requestInput && sigilContainer && canvas && asciiArt && request && exportButtonsContainer) {
+		generateBtn.addEventListener('click', async () => {
+			const input = requestInput.value.trim();
+			if (!input) {
+				return;
+			}
+
+			// Normalize input
+			const normalized = input.toLowerCase().replace(/\s+/g, ' ').trim();
+
+			// Hash with server-side secret salt
+			const hashStr = await hash(normalized);
+			
+			// Extract seeds and create RNGs
+			const seeds = extractSeeds(hashStr);
+			const rngs = createRNGs(hashStr);
+
+			// Show container first (but keep opacity 0) so we can measure it properly
+			sigilContainer.style.display = 'flex';
+			sigilContainer.style.visibility = 'visible';
+			sigilContainer.style.opacity = '0';
+			
+			// Force layout recalculation
+			void sigilContainer.offsetHeight;
+			void canvas.offsetHeight;
+			
+			// Small delay to ensure layout is calculated
+			await new Promise(resolve => requestAnimationFrame(resolve));
+			await new Promise(resolve => requestAnimationFrame(resolve));
+			
+			const canvasSetup = setupCanvas(canvas);
+			if (canvasSetup) {
+				// Double-check we have valid dimensions
+				if (canvasSetup.size > 0) {
+					generateSigil(canvasSetup.ctx, canvasSetup.size, canvasSetup.dpr, rngs, seeds);
+				}
+				
+				// Hide ASCII art and request box, show sigil and export buttons
+				asciiArt.style.opacity = '0';
+				asciiArt.style.pointerEvents = 'none';
+				request.style.opacity = '0';
+				request.style.pointerEvents = 'none';
+				
+				// Scroll to top and reset zoom on mobile
+				window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+				
+				// Reset viewport zoom if possible
+				const viewport = document.querySelector('meta[name="viewport"]');
+				if (viewport) {
+					viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes');
+				}
+				
+				// Blur any focused input to prevent mobile zoom
+				if (document.activeElement && document.activeElement instanceof HTMLElement) {
+					document.activeElement.blur();
+				}
+				
+				setTimeout(() => {
+					sigilContainer.style.opacity = '1';
+					sigilContainer.style.pointerEvents = 'auto';
+					exportButtonsContainer.style.opacity = '1';
+					exportButtonsContainer.style.pointerEvents = 'auto';
+					
+					// Ensure we're still at the top after content changes
+					window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+				}, 250);
+			}
+		});
+	}
+
+	if (canvas && exportPngBtn) {
+		exportPngBtn.addEventListener('click', () => exportPNG(canvas));
+	}
+
+	if (canvas && exportJpegBtn) {
+		exportJpegBtn.addEventListener('click', () => exportJPEG(canvas));
+	}
+
+	if (canvas && exportPdfBtn) {
+		exportPdfBtn.addEventListener('click', () => exportPDF(canvas));
+	}
+</script>
