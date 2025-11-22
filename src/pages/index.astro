@@ -180,8 +180,6 @@ import Layout from '../layouts/Layout.astro';
 					<canvas 
 						id="sigil-canvas"
 						class="max-w-md w-full aspect-square border border-gray-700 bg-black"
-						width="800"
-						height="800"
 					></canvas>
 				</div>
 			</div>
@@ -297,33 +295,76 @@ import Layout from '../layouts/Layout.astro';
 	}
 
 	// Setup canvas for high-DPI displays
-	function setupCanvas(canvas: HTMLCanvasElement): CanvasRenderingContext2D | null {
+	function setupCanvas(canvas: HTMLCanvasElement): { ctx: CanvasRenderingContext2D; size: number; dpr: number } | null {
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return null;
 
 		const dpr = window.devicePixelRatio || 1;
-		const rect = canvas.getBoundingClientRect();
-		const displaySize = Math.min(rect.width || 400, 400);
 		
-		canvas.width = displaySize * dpr;
-		canvas.height = displaySize * dpr;
-		canvas.style.width = displaySize + 'px';
-		canvas.style.height = displaySize + 'px';
+		// Force a layout recalculation by temporarily making visible
+		const wasHidden = canvas.style.display === 'none' || canvas.style.visibility === 'hidden';
+		if (wasHidden) {
+			const originalDisplay = canvas.style.display;
+			const originalVisibility = canvas.style.visibility;
+			canvas.style.display = 'block';
+			canvas.style.visibility = 'visible';
+			// Force reflow
+			void canvas.offsetHeight;
+		}
+		
+		const rect = canvas.getBoundingClientRect();
+		const computedStyle = window.getComputedStyle(canvas);
+		
+		// Get actual rendered size
+		let displaySize = rect.width;
+		if (displaySize <= 0 || isNaN(displaySize)) {
+			const widthStr = computedStyle.width;
+			displaySize = widthStr ? parseInt(widthStr) : 400;
+		}
+		
+		// Ensure we have a valid size
+		displaySize = Math.max(100, Math.min(displaySize, 400));
+		
+		// Restore original visibility if it was hidden
+		if (wasHidden) {
+			canvas.style.display = '';
+			canvas.style.visibility = '';
+		}
+		
+		// Get the actual rendered size after CSS has applied aspect-square
+		const finalRect = canvas.getBoundingClientRect();
+		const finalSize = Math.min(finalRect.width, finalRect.height) || displaySize;
+		
+		// Set internal resolution (device pixels) - use square dimensions
+		canvas.width = finalSize * dpr;
+		canvas.height = finalSize * dpr;
+		
+		// Don't override CSS - let aspect-square handle the sizing
+		// The canvas internal resolution is set above for crisp rendering
 
+		// Reset transform and scale for high-DPI
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
 		ctx.scale(dpr, dpr);
-		return ctx;
+		
+		return { ctx, size: finalSize, dpr };
 	}
 
 	// Generate sigil geometry
-	function generateSigil(ctx: CanvasRenderingContext2D, rng: () => number): void {
-		const w = ctx.canvas.width;
-		const h = ctx.canvas.height;
-		const size = Math.min(w, h);
-
-		ctx.clearRect(0, 0, w, h);
+	function generateSigil(ctx: CanvasRenderingContext2D, size: number, dpr: number, rng: () => number): void {
+		// Clear entire canvas (coordinate system is already scaled by DPR)
+		ctx.clearRect(0, 0, size, size);
+		
+		// Save state and set up coordinate system
+		ctx.save();
+		
+		// Set drawing style
 		ctx.strokeStyle = '#22c55e';
 		ctx.lineWidth = 2;
-		ctx.translate(w / 2, h / 2);
+		
+		// Translate to exact center (in logical pixel coordinates - already scaled by DPR)
+		const centerX = size / 2;
+		const centerY = size / 2;
+		ctx.translate(centerX, centerY);
 
 		// Determine symmetry (3-8 fold for visual appeal)
 		const symmetry = [3, 4, 5, 6, 8][Math.floor(rng() * 5)];
@@ -404,7 +445,8 @@ import Layout from '../layouts/Layout.astro';
 			}
 		}
 
-		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		// Restore transform (removes translation)
+		ctx.restore();
 	}
 
 	// Export functions
@@ -482,9 +524,25 @@ import Layout from '../layouts/Layout.astro';
 			const seed = hexToInt(hashStr);
 			const rng = seededRNG(seed);
 
-			const ctx = setupCanvas(canvas);
-			if (ctx) {
-				generateSigil(ctx, rng);
+			// Show container first (but keep opacity 0) so we can measure it properly
+			sigilContainer.style.display = 'flex';
+			sigilContainer.style.visibility = 'visible';
+			sigilContainer.style.opacity = '0';
+			
+			// Force layout recalculation
+			void sigilContainer.offsetHeight;
+			void canvas.offsetHeight;
+			
+			// Small delay to ensure layout is calculated
+			await new Promise(resolve => requestAnimationFrame(resolve));
+			await new Promise(resolve => requestAnimationFrame(resolve));
+			
+			const canvasSetup = setupCanvas(canvas);
+			if (canvasSetup) {
+				// Double-check we have valid dimensions
+				if (canvasSetup.size > 0) {
+					generateSigil(canvasSetup.ctx, canvasSetup.size, canvasSetup.dpr, rng);
+				}
 				
 				// Hide ASCII art and request box, show sigil and export buttons
 				asciiArt.style.opacity = '0';
