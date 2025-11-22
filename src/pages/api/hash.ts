@@ -20,13 +20,38 @@ export const GET: APIRoute = async (): Promise<Response> => {
 
 export const POST: APIRoute = async ({ request }): Promise<Response> => {
 	try {
-		// Parse JSON body - Astro handles this more safely
+		// Read request body as text first (more reliable in serverless)
+		let bodyText: string;
+		try {
+			bodyText = await request.text();
+		} catch (readError) {
+			console.error('Failed to read request body:', readError);
+			return new Response(
+				JSON.stringify({ error: 'Failed to read request body', details: String(readError) }),
+				{ 
+					status: 400, 
+					headers: { 'Content-Type': 'application/json' } 
+				}
+			);
+		}
+
+		// Parse JSON body
 		let body: { input?: string };
 		try {
-			body = await request.json();
+			if (!bodyText || bodyText.trim() === '') {
+				return new Response(
+					JSON.stringify({ error: 'Request body is empty' }),
+					{ 
+						status: 400, 
+						headers: { 'Content-Type': 'application/json' } 
+					}
+				);
+			}
+			body = JSON.parse(bodyText);
 		} catch (parseError) {
+			console.error('JSON parse error:', parseError);
 			return new Response(
-				JSON.stringify({ error: 'Invalid JSON in request body' }),
+				JSON.stringify({ error: 'Invalid JSON in request body', details: String(parseError) }),
 				{ 
 					status: 400, 
 					headers: { 'Content-Type': 'application/json' } 
@@ -60,9 +85,24 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 		}
 
 		// Hash with secret salt: sha256(input + secret)
-		const hash = createHash('sha256')
-			.update(normalized + SECRET_SALT)
-			.digest('hex');
+		let hash: string;
+		try {
+			hash = createHash('sha256')
+				.update(normalized + SECRET_SALT)
+				.digest('hex');
+		} catch (hashError) {
+			console.error('Hash creation error:', hashError);
+			return new Response(
+				JSON.stringify({ 
+					error: 'Failed to create hash', 
+					details: String(hashError) 
+				}),
+				{ 
+					status: 500, 
+					headers: { 'Content-Type': 'application/json' } 
+				}
+			);
+		}
 
 		return new Response(
 			JSON.stringify({ hash }),
