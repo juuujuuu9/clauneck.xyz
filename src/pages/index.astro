@@ -872,19 +872,53 @@ import Layout from '../layouts/Layout.astro';
 		ctx.restore();
 	}
 
-	// Export functions
+	// Detect mobile device
+	function isMobile(): boolean {
+		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+			(window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+	}
+
+	// Export functions with mobile support
 	function exportPNG(canvas: HTMLCanvasElement): void {
-		const link = document.createElement('a');
-		link.download = 'sigil.png';
-		link.href = canvas.toDataURL('image/png');
-		link.click();
+		const dataURL = canvas.toDataURL('image/png');
+		
+		if (isMobile()) {
+			// Mobile: open in new tab (user can long-press to save)
+			const newWindow = window.open();
+			if (newWindow) {
+				newWindow.document.write(`<img src="${dataURL}" style="max-width:100%;height:auto;" />`);
+				newWindow.document.close();
+			}
+		} else {
+			// Desktop: direct download
+			const link = document.createElement('a');
+			link.download = 'sigil.png';
+			link.href = dataURL;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
 	}
 
 	function exportJPEG(canvas: HTMLCanvasElement): void {
-		const link = document.createElement('a');
-		link.download = 'sigil.jpg';
-		link.href = canvas.toDataURL('image/jpeg', 0.95);
-		link.click();
+		const dataURL = canvas.toDataURL('image/jpeg', 0.95);
+		
+		if (isMobile()) {
+			// Mobile: open in new tab (user can long-press to save)
+			const newWindow = window.open();
+			if (newWindow) {
+				newWindow.document.write(`<img src="${dataURL}" style="max-width:100%;height:auto;" />`);
+				newWindow.document.close();
+			}
+		} else {
+			// Desktop: direct download
+			const link = document.createElement('a');
+			link.download = 'sigil.jpg';
+			link.href = dataURL;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
 	}
 
 	async function exportPDF(canvas: HTMLCanvasElement): Promise<void> {
@@ -903,7 +937,24 @@ import Layout from '../layouts/Layout.astro';
 			canvas.width,
 			canvas.height
 		);
-		pdf.save('sigil.pdf');
+
+		if (isMobile()) {
+			// Mobile: create blob URL and trigger download via link
+			const pdfBlob = pdf.output('blob');
+			const blobURL = URL.createObjectURL(pdfBlob);
+			const link = document.createElement('a');
+			link.href = blobURL;
+			link.download = 'sigil.pdf';
+			link.style.display = 'none';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			// Clean up blob URL after a delay
+			setTimeout(() => URL.revokeObjectURL(blobURL), 1000);
+		} else {
+			// Desktop: direct download
+			pdf.save('sigil.pdf');
+		}
 	}
 
 	// UI elements
