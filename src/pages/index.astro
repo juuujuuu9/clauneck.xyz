@@ -482,6 +482,40 @@ import Layout from '../layouts/Layout.astro';
 		ctx.stroke();
 	}
 
+	// Draw bezier curve connection
+	function drawBezierConnection(
+		ctx: CanvasRenderingContext2D,
+		x1: number, y1: number,
+		x2: number, y2: number,
+		rng: () => number
+	): void {
+		// Generate control points for smooth curve
+		const midX = (x1 + x2) / 2;
+		const midY = (y1 + y2) / 2;
+		const perpX = -(y2 - y1);
+		const perpY = x2 - x1;
+		const perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
+		
+		// Fallback to straight line if points are too close
+		if (perpLength < 0.001) {
+			ctx.beginPath();
+			ctx.moveTo(x1, y1);
+			ctx.lineTo(x2, y2);
+			ctx.stroke();
+			return;
+		}
+		
+		const curveAmount = (rng() - 0.5) * 0.6; // -0.3 to 0.3
+		const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+		const controlX = midX + (perpX / perpLength) * curveAmount * dist;
+		const controlY = midY + (perpY / perpLength) * curveAmount * dist;
+		
+		ctx.beginPath();
+		ctx.moveTo(x1, y1);
+		ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+		ctx.stroke();
+	}
+
 	// Draw various shapes
 	function drawShape(
 		ctx: CanvasRenderingContext2D,
@@ -490,7 +524,7 @@ import Layout from '../layouts/Layout.astro';
 		shapeType: number,
 		rotation: number = 0
 	): void {
-		const shape = shapeType % 6;
+		const shape = shapeType % 7;
 		
 		if (shape === 0) {
 			// Circle
@@ -525,7 +559,7 @@ import Layout from '../layouts/Layout.astro';
 			// Star (5-pointed)
 			const innerRadius = size * 0.4;
 			drawStar(ctx, x, y, size, innerRadius, 5, rotation);
-		} else {
+		} else if (shape === 5) {
 			// Diamond/Rhombus
 			ctx.beginPath();
 			ctx.save();
@@ -535,6 +569,28 @@ import Layout from '../layouts/Layout.astro';
 			ctx.lineTo(size, 0);
 			ctx.lineTo(0, size);
 			ctx.lineTo(-size, 0);
+			ctx.closePath();
+			ctx.restore();
+			ctx.stroke();
+		} else {
+			// Cross
+			ctx.beginPath();
+			ctx.save();
+			ctx.translate(x, y);
+			ctx.rotate(rotation);
+			const armLength = size * 0.6;
+			const armWidth = size * 0.2;
+			// Horizontal arm
+			ctx.moveTo(-armLength, -armWidth);
+			ctx.lineTo(armLength, -armWidth);
+			ctx.lineTo(armLength, armWidth);
+			ctx.lineTo(-armLength, armWidth);
+			ctx.closePath();
+			// Vertical arm
+			ctx.moveTo(-armWidth, -armLength);
+			ctx.lineTo(armWidth, -armLength);
+			ctx.lineTo(armWidth, armLength);
+			ctx.lineTo(-armWidth, armLength);
 			ctx.closePath();
 			ctx.restore();
 			ctx.stroke();
@@ -565,7 +621,10 @@ import Layout from '../layouts/Layout.astro';
 		const saturation = 50 + (seeds.color % 30);
 		const lightness = 35 + (seeds.color % 20);
 		ctx.strokeStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-		ctx.lineWidth = 0.8 + rngs[0]() * 1.5;
+		
+		// Base line width range - will vary throughout
+		const baseLineWidth = 0.5 + rngs[0]() * 2.5; // 0.5-3.0 base
+		ctx.lineWidth = baseLineWidth;
 
 		const maxRadius = size * (0.35 + rngs[1]() * 0.15);
 
@@ -617,7 +676,7 @@ import Layout from '../layouts/Layout.astro';
 					const offsetX = (rngs[(i * 10 + j) % rngs.length]() - 0.5) * maxRadius * 0.15;
 					const offsetY = (rngs[(i * 10 + j + 1) % rngs.length]() - 0.5) * maxRadius * 0.15;
 					const size = 1 + rngs[(i * 10 + j + 2) % rngs.length]() * 3.5; // 1-4.5
-					const shapeType = Math.floor(rngs[(i * 10 + j + 3) % rngs.length]() * 6);
+					const shapeType = Math.floor(rngs[(i * 10 + j + 3) % rngs.length]() * 7);
 					const rotation = rngs[(i * 10 + j + 4) % rngs.length]() * Math.PI * 2;
 					cornerPoints.push({
 						x: corner.x + offsetX,
@@ -640,7 +699,7 @@ import Layout from '../layouts/Layout.astro';
 			const angle = baseAngle + angleVariation;
 			const radius = maxRadius * (0.4 + rngs[(i + 2) % rngs.length]() * 0.5);
 			const nodeSize = 1 + rngs[(i + 3) % rngs.length]() * 4; // More size variation: 1-5
-			const shapeType = Math.floor(rngs[(i + 4) % rngs.length]() * 6); // 0-5 shapes
+			const shapeType = Math.floor(rngs[(i + 4) % rngs.length]() * 7); // 0-6 shapes
 			const rotation = rngs[(i + 5) % rngs.length]() * Math.PI * 2;
 			
 			ringPoints.push({
@@ -676,7 +735,7 @@ import Layout from '../layouts/Layout.astro';
 			const angle = rngs[(i + 1) % rngs.length]() * Math.PI * 2;
 			const radius = maxRadius * (0.2 + rngs[(i + 2) % rngs.length]() * 0.7);
 			const size = 0.8 + rngs[(i + 3) % rngs.length]() * 3.5; // 0.8-4.3
-			const shapeType = Math.floor(rngs[(i + 4) % rngs.length]() * 6);
+			const shapeType = Math.floor(rngs[(i + 4) % rngs.length]() * 7);
 			const rotation = rngs[(i + 5) % rngs.length]() * Math.PI * 2;
 			randomPoints.push({
 				x: Math.cos(angle) * radius,
@@ -693,16 +752,18 @@ import Layout from '../layouts/Layout.astro';
 		// Draw center (if using center origin)
 		if (originType === 0 || originType === 3) {
 			const centerSize = 1.5 + rngs[0]() * 3.5; // 1.5-5
-			const centerShape = Math.floor(rngs[1]() * 6);
+			const centerShape = Math.floor(rngs[1]() * 7);
 			const centerRotation = rngs[2]() * Math.PI * 2;
+			ctx.lineWidth = baseLineWidth * (0.8 + rngs[1]() * 0.6); // Vary thickness
 			drawShape(ctx, 0, 0, centerSize, centerShape, centerRotation);
 		}
 
 		// Draw fixed origin (if exists)
 		if (fixedOrigin) {
 			const originSize = 1.5 + rngs[1]() * 2.5; // 1.5-4
-			const originShape = Math.floor(rngs[2]() * 6);
+			const originShape = Math.floor(rngs[2]() * 7);
 			const originRotation = rngs[3]() * Math.PI * 2;
+			ctx.lineWidth = baseLineWidth * (0.7 + rngs[2]() * 0.7); // Vary thickness
 			drawShape(ctx, fixedOrigin.x, fixedOrigin.y, originSize, originShape, originRotation);
 		}
 
@@ -710,42 +771,81 @@ import Layout from '../layouts/Layout.astro';
 		for (let i = 0; i < randomOrigins.length; i++) {
 			const origin = randomOrigins[i];
 			const originSize = 1 + rngs[(i + 2) % rngs.length]() * 2.5; // 1-3.5
-			const originShape = Math.floor(rngs[(i + 3) % rngs.length]() * 6);
+			const originShape = Math.floor(rngs[(i + 3) % rngs.length]() * 7);
 			const originRotation = rngs[(i + 4) % rngs.length]() * Math.PI * 2;
+			ctx.lineWidth = baseLineWidth * (0.6 + rngs[(i + 3) % rngs.length]() * 0.8); // Vary thickness
 			drawShape(ctx, origin.x, origin.y, originSize, originShape, originRotation);
 		}
 
-		// Draw all nodes with varied shapes
-		for (const point of allPoints) {
+		// Draw all nodes with varied shapes and line widths
+		for (let i = 0; i < allPoints.length; i++) {
+			const point = allPoints[i];
+			ctx.lineWidth = baseLineWidth * (0.4 + rngs[(i + 5) % rngs.length]() * 1.2); // Vary thickness per shape
 			drawShape(ctx, point.x, point.y, point.size, point.shape, point.rotation);
 		}
 
-		// Draw lines from various origins
-		ctx.lineWidth = 0.8 + rngs[3]() * 1.2;
+		// Draw small solid filled circles randomly scattered
+		const numSolidCircles = Math.floor(rngs[0]() * 12); // 0-11 small circles
+		const originalFillStyle = ctx.fillStyle;
+		ctx.fillStyle = ctx.strokeStyle; // Use same color as strokes
+		for (let i = 0; i < numSolidCircles; i++) {
+			const angle = rngs[(i + 15) % rngs.length]() * Math.PI * 2;
+			const radius = maxRadius * (0.1 + rngs[(i + 16) % rngs.length]() * 0.8); // Scatter across most of the sigil
+			const circleSize = 0.5 + rngs[(i + 17) % rngs.length]() * 2; // 0.5-2.5 (small circles)
+			const x = Math.cos(angle) * radius;
+			const y = Math.sin(angle) * radius;
+			
+			// Skip if too close to center or existing points (optional - can remove for more randomness)
+			const distFromCenter = Math.sqrt(x * x + y * y);
+			if (distFromCenter > maxRadius * 0.15 || rngs[(i + 18) % rngs.length]() > 0.3) {
+				ctx.beginPath();
+				ctx.arc(x, y, circleSize, 0, Math.PI * 2);
+				ctx.fill();
+			}
+		}
+		ctx.fillStyle = originalFillStyle;
+
+		// Draw lines from various origins with varied thickness
+		// Determine if we should use bezier curves (based on seed)
+		const useBezier = (seeds.noise % 3) !== 0; // 2/3 chance of using curves
 
 		// Lines from center
 		if (originType === 0 || originType === 3) {
 			const centerLineProb = 0.3 + rngs[4]() * 0.4; // 0.3-0.7
+			let pointIdx = 0;
 			for (const point of allPoints) {
 				if (rngs[5]() > centerLineProb) {
-					ctx.beginPath();
-					ctx.moveTo(0, 0);
-					ctx.lineTo(point.x, point.y);
-					ctx.stroke();
+					ctx.lineWidth = baseLineWidth * (0.3 + rngs[(pointIdx + 10) % rngs.length]() * 1.4); // Vary per line
+					if (useBezier && rngs[(pointIdx + 10) % rngs.length]() > 0.4) {
+						drawBezierConnection(ctx, 0, 0, point.x, point.y, () => rngs[(pointIdx + 11) % rngs.length]());
+					} else {
+						ctx.beginPath();
+						ctx.moveTo(0, 0);
+						ctx.lineTo(point.x, point.y);
+						ctx.stroke();
+					}
 				}
+				pointIdx++;
 			}
 		}
 
 		// Lines from fixed origin
 		if (fixedOrigin) {
 			const fixedOriginProb = 0.4 + rngs[6]() * 0.3; // 0.4-0.7
+			let pointIdx = 0;
 			for (const point of allPoints) {
 				if (rngs[7]() > fixedOriginProb) {
-					ctx.beginPath();
-					ctx.moveTo(fixedOrigin.x, fixedOrigin.y);
-					ctx.lineTo(point.x, point.y);
-					ctx.stroke();
+					ctx.lineWidth = baseLineWidth * (0.4 + rngs[(pointIdx + 12) % rngs.length]() * 1.3); // Vary per line
+					if (useBezier && rngs[(pointIdx + 12) % rngs.length]() > 0.4) {
+						drawBezierConnection(ctx, fixedOrigin.x, fixedOrigin.y, point.x, point.y, () => rngs[(pointIdx + 13) % rngs.length]());
+					} else {
+						ctx.beginPath();
+						ctx.moveTo(fixedOrigin.x, fixedOrigin.y);
+						ctx.lineTo(point.x, point.y);
+						ctx.stroke();
+					}
 				}
+				pointIdx++;
 			}
 		}
 
@@ -758,10 +858,131 @@ import Layout from '../layouts/Layout.astro';
 				const pointIdx = Math.floor(rngs[(origIdx + i + 6) % rngs.length]() * allPoints.length);
 				const point = allPoints[pointIdx];
 				if (rngs[(origIdx + i + 7) % rngs.length]() > randomOriginProb) {
+					ctx.lineWidth = baseLineWidth * (0.35 + rngs[(origIdx + i + 8) % rngs.length]() * 1.5); // Vary per line
+					if (useBezier && rngs[(origIdx + i + 8) % rngs.length]() > 0.4) {
+						drawBezierConnection(ctx, origin.x, origin.y, point.x, point.y, () => rngs[(origIdx + i + 9) % rngs.length]());
+					} else {
+						ctx.beginPath();
+						ctx.moveTo(origin.x, origin.y);
+						ctx.lineTo(point.x, point.y);
+						ctx.stroke();
+					}
+				}
+			}
+		}
+
+		// Draw concentric circles and radial spokes from origins
+		const radialPatternType = seeds.structure % 3; // 0=concentric, 1=radial, 2=both
+		
+		// Create multiple random origin points for circles (randomized origins)
+		const numCircleOrigins = 1 + Math.floor(rngs[0]() * 5); // 1-5 random origins for circles
+		const circleOrigins: Array<{ x: number; y: number }> = [];
+		
+		// Collect potential origins: center, fixed origin, random origins, and some random points
+		const potentialOrigins: Array<{ x: number; y: number }> = [];
+		if (originType === 0 || originType === 3) {
+			potentialOrigins.push({ x: 0, y: 0 }); // Center
+		}
+		if (fixedOrigin) {
+			potentialOrigins.push(fixedOrigin);
+		}
+		potentialOrigins.push(...randomOrigins);
+		
+		// Add some random points from allPoints as potential origins
+		const numRandomPointOrigins = Math.floor(rngs[1]() * 4); // 0-3 random points as origins
+		for (let i = 0; i < numRandomPointOrigins && allPoints.length > 0; i++) {
+			const pointIdx = Math.floor(rngs[(i + 2) % rngs.length]() * allPoints.length);
+			potentialOrigins.push({ x: allPoints[pointIdx].x, y: allPoints[pointIdx].y });
+		}
+		
+		// Create completely new random origins for circles
+		for (let i = 0; i < numCircleOrigins; i++) {
+			if (potentialOrigins.length > 0 && rngs[(i + 3) % rngs.length]() > 0.3) {
+				// Sometimes use existing origins
+				const originIdx = Math.floor(rngs[(i + 4) % rngs.length]() * potentialOrigins.length);
+				circleOrigins.push(potentialOrigins[originIdx]);
+			} else {
+				// Create new random origin
+				const angle = rngs[(i + 5) % rngs.length]() * Math.PI * 2;
+				const radius = maxRadius * (0.1 + rngs[(i + 6) % rngs.length]() * 0.7);
+				circleOrigins.push({
+					x: Math.cos(angle) * radius,
+					y: Math.sin(angle) * radius
+				});
+			}
+		}
+		
+		// Draw concentric circles from multiple randomized origins
+		if (radialPatternType === 0 || radialPatternType === 2) {
+			for (let origIdx = 0; origIdx < circleOrigins.length; origIdx++) {
+				const origin = circleOrigins[origIdx];
+				const numCircles = 1 + Math.floor(rngs[(origIdx + 10) % rngs.length]() * 4); // 1-4 circles per origin
+				for (let i = 0; i < numCircles; i++) {
+					const maxRadiusForOrigin = maxRadius * (0.15 + rngs[(origIdx + i + 11) % rngs.length]() * 0.5);
+					const radius = maxRadiusForOrigin * (0.2 + (i / Math.max(1, numCircles - 1)) * 0.7);
+					if (rngs[(origIdx + i + 12) % rngs.length]() > 0.3) {
+						ctx.lineWidth = baseLineWidth * (0.4 + rngs[(origIdx + i + 50) % rngs.length]() * 1.3); // Vary thickness
+						ctx.beginPath();
+						ctx.arc(origin.x, origin.y, radius, 0, Math.PI * 2);
+						ctx.stroke();
+					}
+				}
+			}
+		}
+
+		// Radial spokes from center
+		if ((radialPatternType === 1 || radialPatternType === 2) && (originType === 0 || originType === 3)) {
+			const numSpokes = 4 + Math.floor(rngs[1]() * 8); // 4-11 spokes
+			for (let i = 0; i < numSpokes; i++) {
+				const angle = (i * Math.PI * 2 / numSpokes) + rngs[2]() * 0.2;
+				const spokeLength = maxRadius * (0.5 + rngs[3]() * 0.4);
+				if (rngs[i % rngs.length]() > 0.4) {
+					ctx.lineWidth = baseLineWidth * (0.4 + rngs[(i + 60) % rngs.length]() * 1.2); // Vary thickness
 					ctx.beginPath();
-					ctx.moveTo(origin.x, origin.y);
-					ctx.lineTo(point.x, point.y);
+					ctx.moveTo(0, 0);
+					ctx.lineTo(Math.cos(angle) * spokeLength, Math.sin(angle) * spokeLength);
 					ctx.stroke();
+				}
+			}
+		}
+
+		// Radial spokes from fixed origin
+		if ((radialPatternType === 1 || radialPatternType === 2) && fixedOrigin) {
+			const numSpokes = 3 + Math.floor(rngs[6]() * 6); // 3-8 spokes
+			for (let i = 0; i < numSpokes; i++) {
+				const angle = (i * Math.PI * 2 / numSpokes) + rngs[7]() * 0.3;
+				const spokeLength = maxRadius * (0.3 + rngs[0]() * 0.4);
+				if (rngs[(i + 8) % rngs.length]() > 0.5) {
+					ctx.lineWidth = baseLineWidth * (0.5 + rngs[(i + 80) % rngs.length]() * 1.0); // Vary thickness
+					ctx.beginPath();
+					ctx.moveTo(fixedOrigin.x, fixedOrigin.y);
+					ctx.lineTo(
+						fixedOrigin.x + Math.cos(angle) * spokeLength,
+						fixedOrigin.y + Math.sin(angle) * spokeLength
+					);
+					ctx.stroke();
+				}
+			}
+		}
+
+		// Radial spokes from random origins
+		for (let origIdx = 0; origIdx < randomOrigins.length; origIdx++) {
+			const origin = randomOrigins[origIdx];
+			if (radialPatternType === 1 || radialPatternType === 2) {
+				const numSpokes = 2 + Math.floor(rngs[(origIdx + 11) % rngs.length]() * 5); // 2-6 spokes
+				for (let i = 0; i < numSpokes; i++) {
+					const angle = (i * Math.PI * 2 / numSpokes) + rngs[(origIdx + i + 12) % rngs.length]() * 0.4;
+					const spokeLength = maxRadius * (0.25 + rngs[(origIdx + i + 13) % rngs.length]() * 0.3);
+					if (rngs[(origIdx + i + 14) % rngs.length]() > 0.5) {
+						ctx.lineWidth = baseLineWidth * (0.35 + rngs[(origIdx + i + 100) % rngs.length]() * 1.3); // Vary thickness
+						ctx.beginPath();
+						ctx.moveTo(origin.x, origin.y);
+						ctx.lineTo(
+							origin.x + Math.cos(angle) * spokeLength,
+							origin.y + Math.sin(angle) * spokeLength
+						);
+						ctx.stroke();
+					}
 				}
 			}
 		}
@@ -776,10 +997,15 @@ import Layout from '../layouts/Layout.astro';
 				const p2 = allRingPoints[nextI];
 				
 				if (rngs[i % rngs.length]() > 0.3) {
-					ctx.beginPath();
-					ctx.moveTo(p1.x, p1.y);
-					ctx.lineTo(p2.x, p2.y);
-					ctx.stroke();
+					ctx.lineWidth = baseLineWidth * (0.3 + rngs[(i + 110) % rngs.length]() * 1.5); // Vary thickness
+					if (useBezier && rngs[(i + 20) % rngs.length]() > 0.5) {
+						drawBezierConnection(ctx, p1.x, p1.y, p2.x, p2.y, () => rngs[(i + 21) % rngs.length]());
+					} else {
+						ctx.beginPath();
+						ctx.moveTo(p1.x, p1.y);
+						ctx.lineTo(p2.x, p2.y);
+						ctx.stroke();
+					}
 				}
 			}
 		} else if (connectionStyle === 1) {
@@ -790,10 +1016,15 @@ import Layout from '../layouts/Layout.astro';
 				for (let i = 0; i < starPoints; i++) {
 					const idx = (i * skip) % allRingPoints.length;
 					const point = allRingPoints[idx];
-					ctx.beginPath();
-					ctx.moveTo(0, 0);
-					ctx.lineTo(point.x, point.y);
-					ctx.stroke();
+					ctx.lineWidth = baseLineWidth * (0.4 + rngs[(i + 120) % rngs.length]() * 1.4); // Vary thickness
+					if (useBezier && rngs[(i + 22) % rngs.length]() > 0.5) {
+						drawBezierConnection(ctx, 0, 0, point.x, point.y, () => rngs[(i + 23) % rngs.length]());
+					} else {
+						ctx.beginPath();
+						ctx.moveTo(0, 0);
+						ctx.lineTo(point.x, point.y);
+						ctx.stroke();
+					}
 				}
 				// Connect star points
 				for (let i = 0; i < starPoints; i++) {
@@ -801,10 +1032,15 @@ import Layout from '../layouts/Layout.astro';
 					const idx2 = ((i + 1) * skip) % allRingPoints.length;
 					const p1 = allRingPoints[idx1];
 					const p2 = allRingPoints[idx2];
-					ctx.beginPath();
-					ctx.moveTo(p1.x, p1.y);
-					ctx.lineTo(p2.x, p2.y);
-					ctx.stroke();
+					ctx.lineWidth = baseLineWidth * (0.35 + rngs[(i + 130) % rngs.length]() * 1.5); // Vary thickness
+					if (useBezier && rngs[(i + 24) % rngs.length]() > 0.5) {
+						drawBezierConnection(ctx, p1.x, p1.y, p2.x, p2.y, () => rngs[(i + 25) % rngs.length]());
+					} else {
+						ctx.beginPath();
+						ctx.moveTo(p1.x, p1.y);
+						ctx.lineTo(p2.x, p2.y);
+						ctx.stroke();
+					}
 				}
 			}
 		} else if (connectionStyle === 2) {
@@ -818,21 +1054,32 @@ import Layout from '../layouts/Layout.astro';
 					selectedPoints.push(allPoints[idx]);
 				}
 				// Connect to origin
-				for (const point of selectedPoints) {
-					ctx.beginPath();
-					ctx.moveTo(starOrigin.x, starOrigin.y);
-					ctx.lineTo(point.x, point.y);
-					ctx.stroke();
+				for (let i = 0; i < selectedPoints.length; i++) {
+					const point = selectedPoints[i];
+					ctx.lineWidth = baseLineWidth * (0.4 + rngs[(i + 140) % rngs.length]() * 1.4); // Vary thickness
+					if (useBezier && rngs[(i + 26) % rngs.length]() > 0.5) {
+						drawBezierConnection(ctx, starOrigin.x, starOrigin.y, point.x, point.y, () => rngs[(i + 27) % rngs.length]());
+					} else {
+						ctx.beginPath();
+						ctx.moveTo(starOrigin.x, starOrigin.y);
+						ctx.lineTo(point.x, point.y);
+						ctx.stroke();
+					}
 				}
 				// Connect points in star pattern
 				for (let i = 0; i < selectedPoints.length; i++) {
 					const nextI = (i + 1) % selectedPoints.length;
 					const p1 = selectedPoints[i];
 					const p2 = selectedPoints[nextI];
-					ctx.beginPath();
-					ctx.moveTo(p1.x, p1.y);
-					ctx.lineTo(p2.x, p2.y);
-					ctx.stroke();
+					ctx.lineWidth = baseLineWidth * (0.35 + rngs[(i + 150) % rngs.length]() * 1.5); // Vary thickness
+					if (useBezier && rngs[(i + 28) % rngs.length]() > 0.5) {
+						drawBezierConnection(ctx, p1.x, p1.y, p2.x, p2.y, () => rngs[(i + 29) % rngs.length]());
+					} else {
+						ctx.beginPath();
+						ctx.moveTo(p1.x, p1.y);
+						ctx.lineTo(p2.x, p2.y);
+						ctx.stroke();
+					}
 				}
 			}
 		} else {
@@ -843,10 +1090,15 @@ import Layout from '../layouts/Layout.astro';
 					if (targetIdx !== i) {
 						const p1 = allPoints[i];
 						const p2 = allPoints[targetIdx];
-						ctx.beginPath();
-						ctx.moveTo(p1.x, p1.y);
-						ctx.lineTo(p2.x, p2.y);
-						ctx.stroke();
+						ctx.lineWidth = baseLineWidth * (0.3 + rngs[(i + 160) % rngs.length]() * 1.6); // Vary thickness
+						if (useBezier && rngs[(i + 30) % rngs.length]() > 0.5) {
+							drawBezierConnection(ctx, p1.x, p1.y, p2.x, p2.y, () => rngs[(i + 31) % rngs.length]());
+						} else {
+							ctx.beginPath();
+							ctx.moveTo(p1.x, p1.y);
+							ctx.lineTo(p2.x, p2.y);
+							ctx.stroke();
+						}
 					}
 				}
 			}
@@ -860,10 +1112,15 @@ import Layout from '../layouts/Layout.astro';
 					const p2 = cornerPoints[i + 1];
 					const dist = Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
 					if (dist < maxRadius * 0.5) {
-						ctx.beginPath();
-						ctx.moveTo(p1.x, p1.y);
-						ctx.lineTo(p2.x, p2.y);
-						ctx.stroke();
+						ctx.lineWidth = baseLineWidth * (0.4 + rngs[(i + 170) % rngs.length]() * 1.4); // Vary thickness
+						if (useBezier && rngs[(i + 32) % rngs.length]() > 0.5) {
+							drawBezierConnection(ctx, p1.x, p1.y, p2.x, p2.y, () => rngs[(i + 33) % rngs.length]());
+						} else {
+							ctx.beginPath();
+							ctx.moveTo(p1.x, p1.y);
+							ctx.lineTo(p2.x, p2.y);
+							ctx.stroke();
+						}
 					}
 				}
 			}
