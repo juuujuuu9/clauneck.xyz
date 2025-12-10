@@ -14,15 +14,12 @@ const description = "Clauneck Sigil Engine: Transform your intentions into uniqu
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 		<link rel="icon" type="image/jpeg" href="/favicon.jpg" />
-		<link rel="icon" type="image/png" href="/public/favicon-96x96.png" sizes="96x96" />
-		<link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />
-		<link rel="shortcut icon" href="/public/favicon.ico" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/public/apple-touch-icon.png" />
-		<link rel="manifest" href="/public/site.webmanifest" />
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="manifest" href="/site.webmanifest" />
 		<link rel="canonical" href={canonicalURL} />
-		
-		<!-- Performance hints -->
-		<link rel="dns-prefetch" href="https://clauneck.xyz" />
 		
 		<!-- Primary Meta Tags -->
 		<title>{title}</title>
@@ -84,16 +81,16 @@ const description = "Clauneck Sigil Engine: Transform your intentions into uniqu
 		░▀▀▀░▀▀▀░▀▀▀░▀▀▀░▀▀▀░░░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░░░▀░░▀░░▀▀▀░▀░░░▀░
 																`);																											                                                                                    
 		</script>
+		
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-HYCBHB7EJN"></script>
+		<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'G-HYCBHB7EJN');
+		</script>
 	</head>
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-HYCBHB7EJN"></script>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-
-	gtag('config', 'G-HYCBHB7EJN');
-	</script>
 	<body>
 		<slot />
 	</body>
