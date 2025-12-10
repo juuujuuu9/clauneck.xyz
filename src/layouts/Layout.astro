@@ -82,13 +82,27 @@ const description = "Clauneck Sigil Engine: Transform your intentions into uniqu
 																`);																											                                                                                    
 		</script>
 		
-		<!-- Google tag (gtag.js) -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-HYCBHB7EJN"></script>
+		<!-- Google tag (gtag.js) - Load defensively -->
 		<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-		gtag('config', 'G-HYCBHB7EJN');
+		// Load Google Analytics with error handling
+		(function() {
+			try {
+				const script = document.createElement('script');
+				script.async = true;
+				script.src = 'https://www.googletagmanager.com/gtag/js?id=G-HYCBHB7EJN';
+				script.onerror = function() {
+					console.warn('Google Analytics failed to load');
+				};
+				document.head.appendChild(script);
+				
+				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', 'G-HYCBHB7EJN');
+			} catch (e) {
+				console.warn('Google Analytics initialization failed:', e);
+			}
+		})();
 		</script>
 	</head>
 	<body>
