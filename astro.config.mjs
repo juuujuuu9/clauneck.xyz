@@ -16,13 +16,5 @@ export default defineConfig({
     build: {
       assetsDir: 'assets',
     },
-    server: {
-      hmr: {
-        protocol: 'wss',
-      },
-    },
-  },
-  build: {
-    assets: 'assets',
   },
 });
